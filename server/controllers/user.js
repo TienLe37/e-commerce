@@ -58,8 +58,17 @@ const login = asyncHandler(async (req, res) => {
     throw new Error('Login Khong thanh cong');
   }
 });
-
+// Get User current
+const getCurrent = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const user = await User.findById(_id);
+  return res.status(200).json({
+    success: user ? true : false,
+    rs: user ? user : 'User not found',
+  });
+});
 module.exports = {
   register,
   login,
+  getCurrent,
 };
