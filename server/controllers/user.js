@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const asyncHandler = require('express-async-handler');
+const { generateAccessToken } = require('../middlewares/jwt');
 
 const register = asyncHandler(async (req, res) => {
   const { email, password, firstname, lastname } = req.body;
@@ -34,8 +35,10 @@ const login = asyncHandler(async (req, res) => {
   const response = await User.findOne({ email });
   if (response && (await response.isCorrectPassword(password))) {
     const { password, role, ...userData } = response.toObject();
+    const accessToken = generateAccessToken(response._id, role);
     return res.status(200).json({
       success: true,
+      accessToken,
       userData,
     });
   } else {
