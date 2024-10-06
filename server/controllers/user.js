@@ -1,6 +1,9 @@
 const User = require('../models/user');
 const asyncHandler = require('express-async-handler');
-const { generateAccessToken } = require('../middlewares/jwt');
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require('../middlewares/jwt');
 
 const register = asyncHandler(async (req, res) => {
   const { email, password, firstname, lastname } = req.body;
@@ -35,7 +38,17 @@ const login = asyncHandler(async (req, res) => {
   const response = await User.findOne({ email });
   if (response && (await response.isCorrectPassword(password))) {
     const { password, role, ...userData } = response.toObject();
+    // tao accessToken: Xác thực và phân quyền người dùng
     const accessToken = generateAccessToken(response._id, role);
+    // tao refreshToken : Tạo mới accessToken
+    const refreshToken = generateRefreshToken(response._id);
+    // Luu refreshToken vao Database
+    await User.findByIdAndUpdate(response._id, { refreshToken }, { new: true });
+    // Luu refreshToken vao Cookie
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
     return res.status(200).json({
       success: true,
       accessToken,
