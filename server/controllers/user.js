@@ -91,9 +91,29 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       : ' refreshToken not match',
   });
 });
+// xóa refresh token sau khi đăng xuất
+const logout = asyncHandler(async (req, res) => {
+  const cookie = req.cookies;
+  // kiểm tra xem có token trong cookie hay không
+  if (!cookie && !cookie.refreshAccessToken)
+    throw new Error('No refresh token in cookies');
+  //xóa refreshtoken trong database
+  await User.findOneAndUpdate(
+    { refreshToken: cookie.refreshToken },
+    { refreshToken: '' },
+    { new: true }
+  );
+  // xóa refresh token trong cookies
+  res.clearCookie('refreshToken', { httpOnly: true, secure: true });
+  return res.status(200).json({
+    success: true,
+    mes: 'logout success',
+  });
+});
 module.exports = {
   register,
   login,
   getCurrent,
   refreshAccessToken,
+  logout,
 };
