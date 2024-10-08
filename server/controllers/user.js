@@ -5,7 +5,10 @@ const {
   generateRefreshToken,
 } = require('../middlewares/jwt');
 const jwt = require('jsonwebtoken');
+const sendMail = require('../ultils/sendMail');
+const crypto = require('crypto');
 
+//------------------------------------------------------------------------------------------------------------------
 const register = asyncHandler(async (req, res) => {
   const { email, password, firstname, lastname } = req.body;
   if (!email || !password || !lastname || !firstname)
@@ -110,10 +113,69 @@ const logout = asyncHandler(async (req, res) => {
     mes: 'logout success',
   });
 });
+/// Khi quên mật khẩu => tạo mật khẩu mới bằng email đã đăng kí
+// Client gửi mail
+// Server check mail : Mail hợp lệ -> gửi mail + link có chứa token để reset password
+// Client check mail => click link
+// Client gửi api có chứa token
+//  Check token(client) === token (server gửi) => change password
+const forgotPassword = asyncHandler(async (req, res) => {
+  // lấy email người dùng ở query
+  const { email } = req.query;
+  if (!email) throw new Error('Missing email');
+  const user = await User.findOne({ email });
+  if (!user) throw new Error('User not found');
+  // tạo reset token và mã hóa bằng hàm createPasswordChangedToken
+  const resetToken = user.createPasswordChangedToken();
+  await user.save();
+
+  const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn.Link này sẽ hết hạn sau 15 phút kể từ bây giờ. <a href=${process.env.URL_SERVER}/api/user/reset-password/${resetToken}>Click here</a>`;
+  // tạo data
+  const data = {
+    email,
+    html,
+  };
+  const rs = await sendMail(data);
+  return res.status(200).json({
+    success: true,
+    rs,
+  });
+});
+// sau khi mail gửi về api có chứa token -> Reset Password
+const resetPassword = asyncHandler(async (req, res) => {
+  // lấy password mới được nhập và token từ req.body
+  const { password, token } = req.body;
+  if (!password && !token) throw new Error('Missing input');
+  // mã hóa token bằng crypto để so sánh với passwordResetToken trong dababase
+  const passwordResetToken = crypto
+    .createHash('sha256')
+    .update(token)
+    .digest('hex');
+  // tìm user chứa passwordResetToken và passwordResetExpires còn hạn
+  const user = await User.findOne({
+    passwordResetToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  if (!user) throw new Error('Invalid reset Token');
+  // tiến hành gán lại các thuộc tính mới cho user
+  user.password = password;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  user.passwordChangedAt = Date.now();
+  // Lưu
+  await user.save();
+  return res.status(200).json({
+    success: user ? true : false,
+    mes: user ? 'Password changed success' : 'Something went wrong',
+  });
+});
+
 module.exports = {
   register,
   login,
   getCurrent,
   refreshAccessToken,
   logout,
+  forgotPassword,
+  resetPassword,
 };
