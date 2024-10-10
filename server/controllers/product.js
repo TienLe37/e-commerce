@@ -23,12 +23,45 @@ const getProduct = asyncHandler(async (req, res) => {
 //Lấy nhiều sản phẩm
 // Filtering, sorting & pagination
 const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find();
-  return res.status(200).json({
-    success: products ? true : false,
-    productDatas: products ? products : 'Cannot get products',
-  });
+  // copy queries mới
+  const queries = { ...req.query };
+  // Tách các trường đặc biệt ra khỏi query
+  const excludeFields = ['limit', 'sort', 'page', 'fields'];
+  excludeFields.forEach((el) => delete queries[el]);
+  // Chuyển queries từ dạng mảng Object sang string
+  let queryString = JSON.stringify(queries);
+  // replace để thêm dâu $trước các từ đặc biệt gte|gt|lte|lt => $gte|$gt|$lte|$lt để mongo hiểu
+  queryString = queryString.replace(
+    /\b(gte|gt|lte|lt)\b/g,
+    (match) => `$${match}`
+  );
+  // format lại queries từ dạng string
+  const formatedQueries = JSON.parse(queryString);
+  // Filtering
+  if (queries?.title)
+    formatedQueries.title = { $regex: queries.title, $options: 'i' };
+  // tạo promise dạng pending(không có await) để khi tìm kiếm sẽ chờ người dùng nhập thêm thông tin tìm kiếm
+  let queryCommand = Product.find(formatedQueries);
+
+  //Sort
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(',').join(' ');
+    queryCommand = queryCommand.sort(sortBy);
+  }
+
+  // thực thi hàm queryCommand
+  queryCommand
+    .then(async (response) => {
+      const counts = await Product.find(formatedQueries).countDocuments(); // counts: số lượng sản phẩm thỏa mãn điều kiện
+      return res.status(200).json({
+        success: counts > 0 ? true : false,
+        products: counts > 0 ? response : 'Cannot get products',
+        counts,
+      });
+    })
+    .catch((err) => console.log(err));
 });
+
 const updateProduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
   if (req.body && req.body.title) req.body.slug = slugify(req.body.title);
