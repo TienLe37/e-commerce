@@ -23,7 +23,8 @@ const getProduct = asyncHandler(async (req, res) => {
 //Lấy nhiều sản phẩm
 // Filtering, sorting & pagination
 const getProducts = asyncHandler(async (req, res) => {
-  // copy queries mới
+  /**  copy queries mới từ req.query: dùng destructering : queries va req.query trỏ tới 2 ô nhớ khác nhau
+   chỉnh sửa queries không ảnh hưởng tới req.query **/
   const queries = { ...req.query };
   // Tách các trường đặc biệt ra khỏi query
   const excludeFields = ['limit', 'sort', 'page', 'fields'];
@@ -48,15 +49,28 @@ const getProducts = asyncHandler(async (req, res) => {
     const sortBy = req.query.sort.split(',').join(' ');
     queryCommand = queryCommand.sort(sortBy);
   }
-
+  // Lọc các fields muốn lấy ra ( hoặc không)
+  if (req.query.fields) {
+    const fields = req.query.fields.split(',').join(' ');
+    queryCommand = queryCommand.select(fields);
+  }
+  /** PHÂN TRANG(pagingnation)
+   * Limit: số Object lấy ra sau 1 lần gọi api
+   * page: số thứ tự trang: 1 2 3 ......10 ......
+   * skip: skip số Obbject
+   **/
+  const limit = +req.query.limit || process.env.LIMIT_PRODUCT;
+  const page = +req.query.page || 1;
+  const skip = (page - 1) * limit;
+  queryCommand = queryCommand.skip(skip).limit(limit);
   // thực thi hàm queryCommand
   queryCommand
     .then(async (response) => {
       const counts = await Product.find(formatedQueries).countDocuments(); // counts: số lượng sản phẩm thỏa mãn điều kiện
       return res.status(200).json({
         success: counts > 0 ? true : false,
-        products: counts > 0 ? response : 'Cannot get products',
         counts,
+        products: counts > 0 ? response : 'Cannot get products',
       });
     })
     .catch((err) => console.log(err));
@@ -83,11 +97,49 @@ const deleteProduct = asyncHandler(async (req, res) => {
       : 'Not found product to delete',
   });
 });
-
+// đánh giá sản phẩm
+const ratings = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { star, comment, pid } = req.body;
+  if (!_id || !pid) throw new Error('Missing inputs');
+  // tìm kiếm sản phẩm cần đánh giá bằng pid
+  const ratingProduct = await Product.findById(pid);
+  // xem user đã đánh giá sản phẩm hay chưa
+  const alreadyRating = ratingProduct?.ratings?.find(
+    (el) => el.postedBy.toString() === _id
+  );
+  if (alreadyRating) {
+    // nếu đã đánh giá rồi
+    await Product.updateOne(
+      // tìm trường ratings trong Product
+      {
+        ratings: { $elemMatch: alreadyRating }, // nếu alreadyRating đã match với 1 trường ratings
+      },
+      {
+        $set: { 'ratings.$.star': star, 'ratings.$.comment': comment }, // set: cập nhật lại star comment
+      },
+      { new: true }
+    );
+  } else {
+    // nếu chưa đánh giá
+    await Product.findByIdAndUpdate(
+      // tìm pid
+      pid,
+      {
+        $push: { ratings: { star, comment, postedBy: _id } }, // đẩy star commnet vào ratings
+      },
+      { new: true }
+    );
+  }
+  return res.status(200).json({
+    status: true,
+  });
+});
 module.exports = {
   createProduct,
   getProduct,
   getProducts,
   updateProduct,
   deleteProduct,
+  ratings,
 };
