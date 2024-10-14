@@ -146,7 +146,14 @@ const getBlog = asyncHandler(async (req, res) => {
     Blogs: blog ? blog : 'Cannot get blog ',
   });
 });
-
+const deleteBlog = asyncHandler(async (req, res) => {
+  const { blogid } = req.params;
+  const response = await Blog.findByIdAndDelete(blogid);
+  return res.json({
+    success: response ? true : false,
+    deleteBlog: response ? response : 'Cannot delete brand',
+  });
+});
 module.exports = {
   createNewBlog,
   getBlogs,
@@ -154,4 +161,5 @@ module.exports = {
   likeBlog,
   dislikeBlog,
   getBlog,
+  deleteBlog,
 };

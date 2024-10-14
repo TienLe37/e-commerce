@@ -8,5 +8,5 @@ router.get('/one/:blogid', ctrls.getBlog);
 router.put('/like/:blogid', verifyAccessToken, ctrls.likeBlog);
 router.put('/dislike/:blogid', verifyAccessToken, ctrls.dislikeBlog);
 router.put('/:blogid', [verifyAccessToken, isAdmin], ctrls.updateBlog);
-
+router.delete('/:blogid', [verifyAccessToken, isAdmin], ctrls.deleteBlog);
 module.exports = router;
