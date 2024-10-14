@@ -130,10 +130,28 @@ const dislikeBlog = asyncHandler(async (req, res) => {
     });
   }
 });
+// lấy ra bài blog với số views , danh sách user like , dislike
+const getBlog = asyncHandler(async (req, res) => {
+  const { blogid } = req.params;
+  const blog = await Blog.findByIdAndUpdate(
+    blogid,
+    { $inc: { numberViews: 1 } },
+    { new: true }
+  )
+    .populate('likes', 'firstname lastname')
+    .populate('dislikes', 'firstname lastname');
+
+  return res.json({
+    success: blog ? true : false,
+    Blogs: blog ? blog : 'Cannot get blog ',
+  });
+});
+
 module.exports = {
   createNewBlog,
   getBlogs,
   updateBlog,
   likeBlog,
   dislikeBlog,
+  getBlog,
 };
