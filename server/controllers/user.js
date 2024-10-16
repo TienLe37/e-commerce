@@ -151,7 +151,10 @@ const resetPassword = asyncHandler(async (req, res) => {
   const { password, token } = req.body;
   if (!password && !token) throw new Error('Missing input');
   // mã hóa token bằng crypto để so sánh với passwordResetToken trong dababase
-  const passwordResetToken = crypto.createHash('sha256').update(token).digest('hex');
+  const passwordResetToken = crypto
+    .createHash('sha256')
+    .update(token)
+    .digest('hex');
   // tìm user chứa passwordResetToken và passwordResetExpires còn hạn
   const user = await User.findOne({
     passwordResetToken,
@@ -217,6 +220,55 @@ const updateUser = asyncHandler(async (req, res) => {
   });
 });
 
+// Thêm địc chỉ user
+const updateUserAddress = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  if (!req.body.address) throw new Error('Missng input');
+  const response = await User.findByIdAndUpdate(
+    _id,
+    { $push: { address: req.body.address } },
+    { new: true }
+  ).select('-password  -role -refreshToken');
+  return res.status(200).json({
+    success: response ? true : false,
+    upDateAddress: response ? response : 'Cannot update address  ',
+  });
+});
+// Thêm sản phẩm vào giỏ hàng
+const addToCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { pid, quantity, color } = req.body;
+  if (!pid || !quantity || !color) throw new Error('Missng input');
+  const user = await User.findById(_id).select('cart');
+  // Tìm trong giỏ hàng xem có product chưa
+  const alreadyProduct = user?.cart?.find((el) => el.product.toString() === pid );
+  if (alreadyProduct) {
+    // nếu đã có product
+    if (alreadyProduct.color === color) {
+      const response = await User.updateOne(
+        { cart: { $elemMatch: alreadyProduct } },
+        { $set: {'cart.$.quantity' : alreadyProduct.quantity + +quantity } }, {new : true}
+      );
+      return res.status(200).json({
+        success: response ? true : false,
+        updateUser: response ? response : 'Something went wrong ',
+      });
+    } else {
+      const response = await User.findByIdAndUpdate( _id, { $push: { cart: { product: pid, quantity, color } } },  { new: true } );
+      return res.status(200).json({
+      success: response ? true : false,
+      updateUser: response ? response : 'Something went wrong ',
+    });
+    }
+  }else {
+    const response = await User.findByIdAndUpdate( _id, { $push: { cart: { product: pid, quantity, color } } },  { new: true } );
+      return res.status(200).json({
+      success: response ? true : false,
+      updateUser: response ? response : 'Something went wrong ',
+    });
+  }
+});
+
 module.exports = {
   register,
   login,
@@ -229,4 +281,6 @@ module.exports = {
   deleteUser,
   updateUser,
   updateUserByAdmin,
+  updateUserAddress,
+  addToCart,
 };

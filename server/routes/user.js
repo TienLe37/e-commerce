@@ -10,8 +10,10 @@ router.get('/forgotpassword', ctrls.forgotPassword);
 router.put('/resetpassword', ctrls.resetPassword);
 router.get('/', [verifyAccessToken, isAdmin], ctrls.getUsers);
 router.delete('/', [verifyAccessToken, isAdmin], ctrls.deleteUser);
-router.put('/:uid', [verifyAccessToken, isAdmin], ctrls.updateUserByAdmin); // truyền req.params phải dùng :uid
 router.put('/current', verifyAccessToken, ctrls.updateUser);
+router.put('/address/', verifyAccessToken, ctrls.updateUserAddress);
+router.put('/addtocart/', verifyAccessToken, ctrls.addToCart);
+router.put('/:uid', [verifyAccessToken, isAdmin], ctrls.updateUserByAdmin); 
 
 module.exports = router;
 
