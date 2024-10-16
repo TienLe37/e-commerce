@@ -151,10 +151,7 @@ const resetPassword = asyncHandler(async (req, res) => {
   const { password, token } = req.body;
   if (!password && !token) throw new Error('Missing input');
   // mã hóa token bằng crypto để so sánh với passwordResetToken trong dababase
-  const passwordResetToken = crypto
-    .createHash('sha256')
-    .update(token)
-    .digest('hex');
+  const passwordResetToken = crypto.createHash('sha256').update(token).digest('hex');
   // tìm user chứa passwordResetToken và passwordResetExpires còn hạn
   const user = await User.findOne({
     passwordResetToken,

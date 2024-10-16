@@ -154,6 +154,15 @@ const deleteBlog = asyncHandler(async (req, res) => {
     deleteBlog: response ? response : 'Cannot delete brand',
   });
 });
+const uploadImageBlog = asyncHandler(async (req, res) => {
+  const { blogid } = req.params;
+  if (!req.file) throw new Error('Missing images');
+  const response = await Blog.findByIdAndUpdate(blogid,{ image: req.file.path  },{ new: true });
+  return res.status(200).json({
+    status: response ? true : false,
+    updateBlog: response ? response : 'Cannot upload image',
+  });
+});
 module.exports = {
   createNewBlog,
   getBlogs,
@@ -162,4 +171,5 @@ module.exports = {
   dislikeBlog,
   getBlog,
   deleteBlog,
+  uploadImageBlog
 };
