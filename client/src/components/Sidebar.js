@@ -1,21 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { apiGetCategories } from '../apis/app';
+import React from 'react';
 import { createSlug } from '../utils/helpers';
 import { NavLink } from 'react-router-dom';
-import { isCancel } from 'axios';
+import { useSelector } from 'react-redux';
 const Sidebar = () => {
-  const [categories, setCategories] = useState(null);
-  const fetchCategories = async () => {
-    const response = await apiGetCategories();
-    if (response.success) setCategories(response.Categories);
-  };
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-  // console.log(categories);
+  const { categories } = useSelector((state) => state.app);
   return (
     <div className='flex flex-col border'>
-      {categories.map((el) => (
+      {categories?.map((el) => (
         <NavLink
           key={createSlug(el.title)}
           to={createSlug(el.title)}
