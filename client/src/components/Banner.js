@@ -4,9 +4,9 @@ const Banner = () => {
   return (
     <div>
       <img
-        src='https://digital-world-2.myshopify.com/cdn/shop/files/slideshow3-home2_1920x.jpg?v=1613166679'
+        src='https://digital-world-4.myshopify.com/cdn/shop/files/slideshow2-home4_1920x.jpg?v=1613501343'
         alt='banner'
-        className='w-full object-contain'
+        className='h-[400px] w-full object-cover'
       />
     </div>
   );
