@@ -7,17 +7,13 @@ export const appSlice = createSlice({
     categories: [],
     isLoading: false,
   },
-  reducers: {
-    logout: (state) => {
-      state.isLoading = false;
-    },
-  },
-  // Code xử lý async Actions
+  reducers: {},
 
+  // Code xử lý async Actions
   extraReducers: (builder) => {
-    // builder.addCase(actions.getCategories.pending, (state) => {
-    //   state.isLoading = true;
-    // });
+    builder.addCase(actions.getCategories.pending, (state) => {
+      state.isLoading = true;
+    });
     builder.addCase(actions.getCategories.fulfilled, (state, action) => {
       state.isLoading = false;
       state.categories = action.payload;
@@ -29,5 +25,5 @@ export const appSlice = createSlice({
   },
 });
 
-export const {} = appSlice.actions;
+// export const {} = appSlice.actions;
 export default appSlice.reducer;
