@@ -8,7 +8,7 @@ const Home = () => {
         <Sidebar />
         <span>Daily</span>
       </div>
-      <div className='flex flex-col gap-5 w-[80%] flex-auto border'>
+      <div className='flex flex-col gap-5 w-[80%] flex-auto '>
         <Banner />
         <BestSeller />
       </div>
