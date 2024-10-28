@@ -1,11 +1,12 @@
 import icons from './icons';
 const { AiFillStar, AiOutlineStar } = icons;
-export const renderStar = (number) => {
+export const renderStar = (number, size) => {
   if (!Number(number)) return;
   const stars = [];
-  for (let i = 0; i < +number; i++) stars.push(<AiFillStar color='orange' />);
+  for (let i = 0; i < +number; i++)
+    stars.push(<AiFillStar color='orange' size={size || 16} />);
   for (let i = 5; i > +number; i--)
-    stars.push(<AiOutlineStar color='orange' />);
+    stars.push(<AiOutlineStar color='orange' size={size || 16} />);
 
   return stars;
 };

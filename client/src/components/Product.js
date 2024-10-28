@@ -46,7 +46,7 @@ function Product({ productData, isNew }) {
             {renderStar(productData?.totalRatings)}
           </span>
           <span className='line-clamp-1'>{productData?.title}</span>
-          <span>{`${formatMoney(productData.price)} VND`}</span>
+          <span>{`${formatMoney(productData.price)} VNĐ`}</span>
         </div>
       </div>
     </div>
