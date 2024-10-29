@@ -1,9 +1,10 @@
 import React, { useState, useEffect, memo } from 'react';
 import { AiFillStar, AiOutlineMenu } from 'react-icons/ai';
 import { apiGetProduct } from '../apis/product';
-import { formatMoney, renderStar } from '../utils/helpers';
+import { formatMoney, renderStar, secondsToHms } from '../utils/helpers';
 import cmsoon from '../assets/cmsoon.jpg';
 import Countdown from './Countdown';
+import moment from 'moment';
 let idInterval;
 const DealDailyy = () => {
   const [dealDailyy, setDealDailyy] = useState(null);
@@ -19,7 +20,15 @@ const DealDailyy = () => {
     });
     if (response.success) {
       setDealDailyy(response.products[0]);
-      setHour(24);
+      const today = `${moment().format('MM/DD/YYYY')} 7:00:00`;
+      const seconds =
+        new Date(today).getTime() - new Date().getTime() + 24 * 3600 * 1000;
+      const number = secondsToHms(seconds);
+      setHour(number.h);
+      setMinute(number.m);
+      setSecond(number.s);
+    } else {
+      setHour(0);
       setMinute(59);
       setSecond(59);
     }
