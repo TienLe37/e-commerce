@@ -77,7 +77,9 @@ const DealDailyy = () => {
           className='w[243px] h[243px] object-cover '
         />
         <span className='flex h-4'>
-          {renderStar(dealDailyy?.totalRatings, 20)}
+          {renderStar(dealDailyy?.totalRatings, 20)?.map((el, index) => (
+            <span key={index}>{el}</span>
+          ))}
         </span>
         <span className='line-clamp-1 text-center '>{dealDailyy?.title}</span>
         <span>{`${formatMoney(+dealDailyy?.price)} VNĐ`}</span>

@@ -8,7 +8,7 @@ import {
   AiFillEye,
   AiOutlineMenu,
 } from 'react-icons/ai';
-
+import { IoIosArrowForward } from 'react-icons/io';
 const icons = {
   RiPhoneFill,
   MdEmail,
@@ -19,6 +19,7 @@ const icons = {
   BsFillSuitHeartFill,
   AiFillEye,
   AiOutlineMenu,
+  IoIosArrowForward,
 };
 
 export default icons;

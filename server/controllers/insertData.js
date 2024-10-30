@@ -33,6 +33,7 @@ const fn2 = async (dataCate) => {
   await productCategory.create({
     title: dataCate?.cate,
     brand: dataCate?.brand,
+    image: dataCate?.image,
   });
 };
 const insertCategory = asyncHandler(async (req, res) => {

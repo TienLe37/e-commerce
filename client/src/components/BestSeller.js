@@ -1,36 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { apiGetProduct } from '../apis/product';
-import { Product } from './';
-import Slider from 'react-slick';
+import { CustomSlider } from './';
+import { getNewProducts } from '../store/products/asyncActions';
+import { useDispatch, useSelector } from 'react-redux';
 const tabs = [
   { id: 1, name: 'best sellers' },
   { id: 2, name: 'new arrivals' },
 ];
-const settings = {
-  dots: false,
-  infinite: false,
-  speed: 500,
-  slidesToShow: 3,
-  slidesToScroll: 1,
-};
+
 const BestSeller = () => {
   const [bestSellers, setBestSellers] = useState(null);
-  const [newProducts, setNewProducts] = useState(null);
   const [activedTab, setActiveTab] = useState(1);
   const [products, setProducts] = useState(null);
+  const dispatch = useDispatch();
+  const { newProducts } = useSelector((state) => state.products);
   const fetchProduct = async () => {
-    const response = await Promise.all([
-      apiGetProduct({ sort: '-sold' }),
-      apiGetProduct({ sort: '-createdAt' }),
-    ]);
-    if (response[0]?.success) {
-      setBestSellers(response[0].products);
-      setProducts(response[0].products);
+    const response = await apiGetProduct({ sort: '-sold' });
+    if (response.success) {
+      setBestSellers(response.products);
+      setProducts(response.products);
     }
-    if (response[1]?.success) setNewProducts(response[1].products);
   };
   useEffect(() => {
     fetchProduct();
+    dispatch(getNewProducts());
   }, []);
   useEffect(() => {
     if (activedTab === 1) setProducts(bestSellers);
@@ -39,10 +32,10 @@ const BestSeller = () => {
   return (
     <div>
       <div className='flex text-[20px] ml-[-32px] '>
-        {tabs.map((el) => (
+        {tabs.map((el, index) => (
           <span
-            key={el.id}
-            className={`font-semibold capitalize px-8 border-r cursor-pointer text-gray-400 
+            key={index}
+            className={`font-semibold uppercase  px-8 border-r cursor-pointer text-gray-400 
               ${activedTab === el.id ? ' text-main ' : ''} `}
             onClick={() => setActiveTab(el.id)}
           >
@@ -51,16 +44,7 @@ const BestSeller = () => {
         ))}
       </div>
       <div className='mt-4 border-t-2 border-main pt-4'>
-        <Slider {...settings} className='w-full'>
-          {products?.map((el) => (
-            <Product
-              key={el.id}
-              pid={el.id}
-              productData={el}
-              isNew={activedTab === 2 ? true : false}
-            />
-          ))}
-        </Slider>
+        <CustomSlider products={products} activedTab={activedTab} />
       </div>
       <div className='w-full flex gap-4 mt-8 '>
         <img
