@@ -5,8 +5,11 @@ import { apiLogin, apiRegister } from '../../apis/user';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import path from '../../utils/path';
+import { useDispatch } from 'react-redux';
+import { register } from '../../store/user/userSlice';
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [payload, setPayload] = useState({
     email: '',
     password: '',
@@ -41,6 +44,13 @@ const Login = () => {
     } else {
       const rs = await apiLogin(data);
       if (rs.success) {
+        dispatch(
+          register({
+            isLoggedIn: true,
+            token: rs.accessToken,
+            userData: rs.userData,
+          })
+        );
         navigate(`/${path.HOME}`);
       } else {
         Swal.fire('Fail!', rs.mes, 'error');
