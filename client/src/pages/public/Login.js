@@ -1,30 +1,73 @@
 import React, { useCallback, useState } from 'react';
 import login from '../../assets/login.jpg';
 import { Button, InputField } from '../../components';
+import { apiLogin, apiRegister } from '../../apis/user';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
+import path from '../../utils/path';
 const Login = () => {
+  const navigate = useNavigate();
   const [payload, setPayload] = useState({
     email: '',
     password: '',
-    name: '',
+    firstname: '',
+    lastname: '',
+    mobile: '',
   });
   const [isRegister, setisRegister] = useState(false);
-  const handleSubmit = useCallback(() => {
-    console.log(payload);
-  }, [payload]);
+  const resetPayload = () => {
+    setPayload({
+      email: '',
+      password: '',
+      firstname: '',
+      lastname: '',
+      mobile: '',
+    });
+  };
+  const handleSubmit = useCallback(async () => {
+    const { firstname, lastname, mobile, ...data } = payload;
+    if (isRegister) {
+      const response = await apiRegister(payload);
+      if (response.success) {
+        Swal.fire('Congratulation!', response.mes, 'success').then(() => {
+          setisRegister(false);
+          resetPayload();
+        });
+      } else {
+        Swal.fire('Fail!', response.mes, 'error');
+      }
+
+      console.log(response);
+    } else {
+      const rs = await apiLogin(data);
+      if (rs.success) {
+        navigate(`/${path.HOME}`);
+      } else {
+        Swal.fire('Fail!', rs.mes, 'error');
+      }
+    }
+  }, [payload, isRegister]);
   return (
     <div className='w-screen h-screen relative'>
       <img src={login} alt='' className='w-full h-full object-cover' />
-      <div className=' absolute top-0 bottom-0 left-0 right-1/2 items-center justify-center flex'>
+      <div className=' absolute top-0 bottom-0 left-0 right-0 items-center justify-center flex'>
         <div className='p-8 bg-white flex flex-col items-center rounded-md min-w-[500px]'>
           <h1 className='text-[28px] font-semibold text-main mb-8'>
             {isRegister ? 'Register' : 'Login'}
           </h1>
           {isRegister && (
-            <InputField
-              value={payload.name}
-              setValue={setPayload}
-              nameKey='name'
-            />
+            <div className='flex gap-2 items-center'>
+              <InputField
+                value={payload.firstname}
+                setValue={setPayload}
+                nameKey='firstname'
+              />
+              <InputField
+                value={payload.lastname}
+                setValue={setPayload}
+                nameKey='lastname'
+              />
+            </div>
           )}
           <InputField
             value={payload.email}
@@ -37,6 +80,13 @@ const Login = () => {
             nameKey='password'
             type='password'
           />
+          {isRegister && (
+            <InputField
+              value={payload.mobile}
+              setValue={setPayload}
+              nameKey='mobile'
+            />
+          )}
           <Button
             name={isRegister ? 'Register' : 'Login'}
             handleOnClick={handleSubmit}

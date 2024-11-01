@@ -13,7 +13,7 @@ const register = asyncHandler(async (req, res) => {
   const { email, password, firstname, lastname } = req.body;
   if (!email || !password || !lastname || !firstname)
     return res.status(400).json({
-      sucess: false,
+      success: false,
       mes: 'Missing inputs',
     });
 
@@ -22,7 +22,7 @@ const register = asyncHandler(async (req, res) => {
   else {
     const newUser = await User.create(req.body);
     return res.status(200).json({
-      sucess: newUser ? true : false,
+      success: newUser ? true : false,
       mes: newUser
         ? 'Register is successfully. Please go login~'
         : 'Something went wrong',
@@ -35,7 +35,7 @@ const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password)
     return res.status(400).json({
-      sucess: false,
+      success: false,
       mes: 'Missing inputs',
     });
   // plain object
@@ -241,28 +241,39 @@ const addToCart = asyncHandler(async (req, res) => {
   if (!pid || !quantity || !color) throw new Error('Missng input');
   const user = await User.findById(_id).select('cart');
   // Tìm trong giỏ hàng xem có product chưa
-  const alreadyProduct = user?.cart?.find((el) => el.product.toString() === pid );
+  const alreadyProduct = user?.cart?.find(
+    (el) => el.product.toString() === pid
+  );
   if (alreadyProduct) {
     // nếu đã có product
     if (alreadyProduct.color === color) {
       const response = await User.updateOne(
         { cart: { $elemMatch: alreadyProduct } },
-        { $set: {'cart.$.quantity' : alreadyProduct.quantity + +quantity } }, {new : true}
+        { $set: { 'cart.$.quantity': alreadyProduct.quantity + +quantity } },
+        { new: true }
       );
       return res.status(200).json({
         success: response ? true : false,
         updateUser: response ? response : 'Something went wrong ',
       });
     } else {
-      const response = await User.findByIdAndUpdate( _id, { $push: { cart: { product: pid, quantity, color } } },  { new: true } );
+      const response = await User.findByIdAndUpdate(
+        _id,
+        { $push: { cart: { product: pid, quantity, color } } },
+        { new: true }
+      );
       return res.status(200).json({
-      success: response ? true : false,
-      updateUser: response ? response : 'Something went wrong ',
-    });
+        success: response ? true : false,
+        updateUser: response ? response : 'Something went wrong ',
+      });
     }
-  }else {
-    const response = await User.findByIdAndUpdate( _id, { $push: { cart: { product: pid, quantity, color } } },  { new: true } );
-      return res.status(200).json({
+  } else {
+    const response = await User.findByIdAndUpdate(
+      _id,
+      { $push: { cart: { product: pid, quantity, color } } },
+      { new: true }
+    );
+    return res.status(200).json({
       success: response ? true : false,
       updateUser: response ? response : 'Something went wrong ',
     });

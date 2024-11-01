@@ -47,7 +47,7 @@ const Home = () => {
           {categories
             ?.filter((el) => el.brand.length > 0)
             .map((el) => (
-              <div key={el._id} className='w-[389px]'>
+              <div key={el.id} className='w-[389px]'>
                 <div className='border flex p-4 gap-4 min-h-[202px]'>
                   <img
                     src={el?.image}
