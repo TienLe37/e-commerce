@@ -9,6 +9,7 @@ import {
   FAQ,
   Services,
   Products,
+  FinalRegister,
 } from './pages/public';
 import path from './utils/path';
 import { getCategories } from './store/app/asyncActions';
@@ -33,6 +34,8 @@ function App() {
           <Route path={path.SERVICES} element={<Services />} />
           <Route path={path.PRODUCTS} element={<Products />} />
         </Route>
+        <Route path={path.FINAL_REGISTER} element={<FinalRegister />} />
+
         <Route path={path.LOGIN} element={<Login />} />
       </Routes>
     </div>

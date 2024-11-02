@@ -3,13 +3,15 @@ import login from '../../assets/login.jpg';
 import { Button, InputField } from '../../components';
 import { apiLogin, apiRegister } from '../../apis/user';
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import path from '../../utils/path';
 import { useDispatch } from 'react-redux';
 import { register } from '../../store/user/userSlice';
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+  console.log(location);
   const [payload, setPayload] = useState({
     email: '',
     password: '',
@@ -101,6 +103,7 @@ const Login = () => {
             name={isRegister ? 'Register' : 'Login'}
             handleOnClick={handleSubmit}
             fw
+            hover
           />
           <div className='flex items-center justify-between w-full text-sm mt-2'>
             {!isRegister && (

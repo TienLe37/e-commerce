@@ -7,27 +7,62 @@ const {
 const jwt = require('jsonwebtoken');
 const sendMail = require('../ultils/sendMail');
 const crypto = require('crypto');
-
+const makeToken = require('uniqid');
 //------------------------------------------------------------------------------------------------------------------
+// Đăng ký : Active đăng kí qua email
 const register = asyncHandler(async (req, res) => {
-  const { email, password, firstname, lastname } = req.body;
-  if (!email || !password || !lastname || !firstname)
+  const { email, password, firstname, lastname, mobile } = req.body;
+  if (!email || !password || !lastname || !firstname || !mobile)
     return res.status(400).json({
       success: false,
       mes: 'Missing inputs',
     });
-
+  // kiểm tra email đã tồn tại chưa
   const user = await User.findOne({ email });
   if (user) throw new Error('User has existed');
   else {
-    const newUser = await User.create(req.body);
-    return res.status(200).json({
-      success: newUser ? true : false,
-      mes: newUser
-        ? 'Register is successfully. Please go login~'
-        : 'Something went wrong',
+    const token = makeToken(); // tạo token
+    // Lưu  email, password, firstname, lastname, mobile , token vào Cookie trên trình duyệt
+    res.cookie(
+      'dataRegister',
+      { ...req.body, token },
+      { httpOnly: true, maxAge: 15 * 60 * 1000 }
+    );
+    const html = `Xin vui lòng click vào link dưới đây để hoàn tất đăng ký tài khoản .Link này sẽ hết hạn sau 15 phút kể từ bây giờ. <a href=${process.env.URL_SERVER}/api/user/finalregister/${token}>Click here</a>`;
+    // Gửi mail
+    await sendMail({
+      email,
+      html,
+      subject: 'Hoàn tất xác thực đăng ký UET SHOP',
+    });
+    return res.json({
+      success: true,
+      mes: 'Please check your email to active register',
     });
   }
+});
+// Hoàn tất đăng kí bằng mail
+const finalRegister = asyncHandler(async (req, res) => {
+  const cookie = req.cookies;
+  const { token } = req.params;
+  // kiểm tra dữ liệu đăng kí đã lưu vào cookie chưa || token lưu trong cookie có giống token ở link mail không
+  if (!cookie || cookie?.dataRegister?.token !== token) {
+    res.clearCookie('dataRegister');
+    return res.redirect(`${process.env.CLIENT_URL}/finalregister/fail`);
+  }
+  //  dữ liệu đăng kí đã lưu vào cookie và token hợp lệ( còn hạn) -> ghi dữ liệu User đã lưu ở cookie vào database
+  const newUser = await User.create({
+    email: cookie?.dataRegister?.email,
+    password: cookie?.dataRegister?.password,
+    firstname: cookie?.dataRegister?.firstname,
+    lastname: cookie?.dataRegister?.lastname,
+    mobile: cookie?.dataRegister?.mobile,
+  });
+  res.clearCookie('dataRegister');
+
+  if (newUser)
+    return res.redirect(`${process.env.CLIENT_URL}/finalregister/success`);
+  else return res.redirect(`${process.env.CLIENT_URL}/finalregister/fail`);
 });
 // Refresh token => Cấp mới access token
 // Access token => Xác thực người dùng, quân quyên người dùng
@@ -138,6 +173,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   const data = {
     email,
     html,
+    subject: 'Forgot password',
   };
   const rs = await sendMail(data);
   return res.status(200).json({
@@ -294,4 +330,5 @@ module.exports = {
   updateUserByAdmin,
   updateUserAddress,
   addToCart,
+  finalRegister,
 };
