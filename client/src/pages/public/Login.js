@@ -1,17 +1,16 @@
 import React, { useCallback, useState } from 'react';
 import login from '../../assets/login.jpg';
 import { Button, InputField } from '../../components';
-import { apiLogin, apiRegister } from '../../apis/user';
+import { apiForgotPassword, apiLogin, apiRegister } from '../../apis/user';
 import Swal from 'sweetalert2';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import path from '../../utils/path';
 import { useDispatch } from 'react-redux';
 import { register } from '../../store/user/userSlice';
+import { toast } from 'react-toastify';
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const location = useLocation();
-  console.log(location);
   const [payload, setPayload] = useState({
     email: '',
     password: '',
@@ -20,6 +19,7 @@ const Login = () => {
     mobile: '',
   });
   const [isRegister, setisRegister] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const resetPayload = () => {
     setPayload({
       email: '',
@@ -59,8 +59,42 @@ const Login = () => {
       }
     }
   }, [payload, isRegister]);
+  const [email, setEmail] = useState('');
+  const handleForgotPassword = async () => {
+    const response = await apiForgotPassword({ email });
+    if (response.success) {
+      toast.success(response.mes, { theme: 'colored' });
+    } else toast.info(response.mes, { theme: 'colored' });
+  };
   return (
     <div className='w-screen h-screen relative'>
+      {isForgotPassword && (
+        <div className=' absolute top-0 left-0 bottom-0 right-0 bg-white flex flex-col justify-center items-center py-8 z-10 animate-slide-right '>
+          <div className='flex flex-col gap-4 '>
+            <label htmlFor='email'> Enter your email:</label>
+            <input
+              type='text'
+              id='email'
+              placeholder='email@gmail.com'
+              className='w-[800px] pb-2 border-b outline-none placeholder:text-sm'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <div className='flex items-center justify-between w-full'>
+              <Button
+                name='Back'
+                handleOnClick={() => setIsForgotPassword(false)}
+                hover
+              />
+              <Button
+                name='Submit'
+                handleOnClick={handleForgotPassword}
+                hover
+              />
+            </div>
+          </div>
+        </div>
+      )}
       <img src={login} alt='' className='w-full h-full object-cover' />
       <div className=' absolute top-0 bottom-0 left-0 right-0 items-center justify-center flex'>
         <div className='p-8 bg-white flex flex-col items-center rounded-md min-w-[500px]'>
@@ -107,7 +141,10 @@ const Login = () => {
           />
           <div className='flex items-center justify-between w-full text-sm mt-2'>
             {!isRegister && (
-              <span className='text-gray-800 hover:underline cursor-pointer'>
+              <span
+                onClick={() => setIsForgotPassword(true)}
+                className='text-gray-800 hover:underline cursor-pointer'
+              >
                 Forgot your account?
               </span>
             )}

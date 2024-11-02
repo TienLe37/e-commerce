@@ -10,6 +10,7 @@ const path = {
   DETAIL_PRODUCT__PID__TITTLE: 'san-pham/:pid/:title',
   DETAIL_PRODUCT: 'san-pham',
   FINAL_REGISTER: 'finalregister/:status',
+  RESET_PASSWORD: 'reset-password/:token',
 };
 
 export default path;

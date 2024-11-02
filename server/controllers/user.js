@@ -15,7 +15,7 @@ const register = asyncHandler(async (req, res) => {
   if (!email || !password || !lastname || !firstname || !mobile)
     return res.status(400).json({
       success: false,
-      mes: 'Missing inputs',
+      mes: 'Vui lòng nhập đủ thông tin',
     });
   // kiểm tra email đã tồn tại chưa
   const user = await User.findOne({ email });
@@ -71,7 +71,7 @@ const login = asyncHandler(async (req, res) => {
   if (!email || !password)
     return res.status(400).json({
       success: false,
-      mes: 'Missing inputs',
+      mes: 'Vui lòng nhập đủ thông tin',
     });
   // plain object
   const response = await User.findOne({ email });
@@ -98,7 +98,7 @@ const login = asyncHandler(async (req, res) => {
       userData,
     });
   } else {
-    throw new Error('Login Khong thanh cong');
+    throw new Error('Đăng nhập thất bại');
   }
 });
 // Get User current
@@ -109,7 +109,7 @@ const getCurrent = asyncHandler(async (req, res) => {
   );
   return res.status(200).json({
     success: user ? true : false,
-    rs: user ? user : 'User not found',
+    rs: user ? user : 'Không tìm thấy User',
   });
 });
 // refreshAcessToken : dùng refreshToken để tạo accessToken mới
@@ -149,7 +149,7 @@ const logout = asyncHandler(async (req, res) => {
   res.clearCookie('refreshToken', { httpOnly: true, secure: true });
   return res.status(200).json({
     success: true,
-    mes: 'logout success',
+    mes: 'Đăng xuất thành công!',
   });
 });
 /// Khi quên mật khẩu => tạo mật khẩu mới bằng email đã đăng kí
@@ -160,15 +160,15 @@ const logout = asyncHandler(async (req, res) => {
 //  Check token(client) === token (server gửi) => change password
 const forgotPassword = asyncHandler(async (req, res) => {
   // lấy email người dùng ở query
-  const { email } = req.query;
-  if (!email) throw new Error('Missing email');
+  const { email } = req.body;
+  if (!email) throw new Error('Vui lòng điền email');
   const user = await User.findOne({ email });
-  if (!user) throw new Error('User not found');
+  if (!user) throw new Error('Email không tồn tại!');
   // tạo reset token và mã hóa bằng hàm createPasswordChangedToken
   const resetToken = user.createPasswordChangedToken();
   await user.save();
 
-  const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn.Link này sẽ hết hạn sau 15 phút kể từ bây giờ. <a href=${process.env.URL_SERVER}/api/user/reset-password/${resetToken}>Click here</a>`;
+  const html = `Xin vui lòng click vào link dưới đây để đặt lại mật khẩu của bạn.Link này sẽ hết hạn sau 15 phút kể từ bây giờ. <a href=${process.env.CLIENT_URL}/reset-password/${resetToken}>Click here</a>`;
   // tạo data
   const data = {
     email,
@@ -177,15 +177,17 @@ const forgotPassword = asyncHandler(async (req, res) => {
   };
   const rs = await sendMail(data);
   return res.status(200).json({
-    success: true,
-    rs,
+    success: rs.response?.includes('OK') ? true : false,
+    mes: rs.response?.includes('OK')
+      ? 'Vui lòng kiểm tra mail của bạn.'
+      : 'Some thing went wrong',
   });
 });
 // sau khi mail gửi về api có chứa token -> Reset Password
 const resetPassword = asyncHandler(async (req, res) => {
   // lấy password mới được nhập và token từ req.body
   const { password, token } = req.body;
-  if (!password && !token) throw new Error('Missing input');
+  if (!password && !token) throw new Error('Vui lòng nhập mật khẩu mới');
   // mã hóa token bằng crypto để so sánh với passwordResetToken trong dababase
   const passwordResetToken = crypto
     .createHash('sha256')
@@ -206,7 +208,9 @@ const resetPassword = asyncHandler(async (req, res) => {
   await user.save();
   return res.status(200).json({
     success: user ? true : false,
-    mes: user ? 'Password changed success' : 'Something went wrong',
+    mes: user
+      ? ' Mật khẩu đã được thay đổi thành công '
+      : 'Something went wrong',
   });
 });
 
@@ -221,7 +225,7 @@ const getUsers = asyncHandler(async (req, res) => {
 // Delete user : role : admin
 const deleteUser = asyncHandler(async (req, res) => {
   const { _id } = req.query;
-  if (!_id) throw new Error('missing input');
+  if (!_id) throw new Error('Vui lòng nhập đủ thông tin');
   const response = await User.findByIdAndDelete(_id);
   return res.status(200).json({
     success: response ? true : false,
@@ -233,7 +237,8 @@ const deleteUser = asyncHandler(async (req, res) => {
 // Update user by admin
 const updateUserByAdmin = asyncHandler(async (req, res) => {
   const { uid } = req.params;
-  if (Object.keys(req.body).length === 0) throw new Error('missing input');
+  if (Object.keys(req.body).length === 0)
+    throw new Error('Vui lòng nhập đủ thông tin');
   const response = await User.findByIdAndUpdate(uid, req.body, {
     new: true,
   }).select('-password  -role -refreshToken');
@@ -246,7 +251,7 @@ const updateUserByAdmin = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   if (!_id || Object.keys(req.body).length === 0)
-    throw new Error('missing input');
+    throw new Error('Vui lòng nhập đủ thông tin');
   const response = await User.findByIdAndUpdate(_id, req.body, {
     new: true,
   }).select('-password  -role -refreshToken');
@@ -259,7 +264,7 @@ const updateUser = asyncHandler(async (req, res) => {
 // Thêm địc chỉ user
 const updateUserAddress = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  if (!req.body.address) throw new Error('Missng input');
+  if (!req.body.address) throw new Error('Vui lòng nhập đủ thông tin');
   const response = await User.findByIdAndUpdate(
     _id,
     { $push: { address: req.body.address } },
@@ -274,7 +279,8 @@ const updateUserAddress = asyncHandler(async (req, res) => {
 const addToCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { pid, quantity, color } = req.body;
-  if (!pid || !quantity || !color) throw new Error('Missng input');
+  if (!pid || !quantity || !color)
+    throw new Error('Vui lòng nhập đủ thông tin');
   const user = await User.findById(_id).select('cart');
   // Tìm trong giỏ hàng xem có product chưa
   const alreadyProduct = user?.cart?.find(

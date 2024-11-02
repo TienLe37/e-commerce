@@ -10,11 +10,13 @@ import {
   Services,
   Products,
   FinalRegister,
+  ResetPassword,
 } from './pages/public';
 import path from './utils/path';
 import { getCategories } from './store/app/asyncActions';
 import { useDispatch } from 'react-redux';
-import { Product } from './components';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -33,11 +35,26 @@ function App() {
           <Route path={path.FAQS} element={<FAQ />} />
           <Route path={path.SERVICES} element={<Services />} />
           <Route path={path.PRODUCTS} element={<Products />} />
+          <Route path={path.RESET_PASSWORD} element={<ResetPassword />} />
         </Route>
         <Route path={path.FINAL_REGISTER} element={<FinalRegister />} />
 
         <Route path={path.LOGIN} element={<Login />} />
       </Routes>
+      <ToastContainer
+        position='top-right'
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme='red'
+      />
+
+      <ToastContainer />
     </div>
   );
 }
