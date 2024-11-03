@@ -13,6 +13,7 @@ import path from '../../utils/path';
 import { useDispatch } from 'react-redux';
 import { loggedIn } from '../../store/user/userSlice';
 import { toast } from 'react-toastify';
+import { validate } from '../../utils/helpers';
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ const Login = () => {
     lastname: '',
     mobile: '',
   });
+  const [invalidFields, setInvalidFields] = useState([]);
   const [isRegister, setisRegister] = useState(false);
   const [isVeryfyEmail, setIsVeryfyEmail] = useState(false);
   const [token, setToken] = useState('');
@@ -40,24 +42,29 @@ const Login = () => {
   // đăng kí - đăng nhập account
   const handleSubmit = useCallback(async () => {
     const { firstname, lastname, mobile, ...data } = payload;
-    if (isRegister) {
-      const response = await apiRegister(payload);
-      if (response.success) {
-        setIsVeryfyEmail(true);
-      }
-    } else {
-      const rs = await apiLogin(data);
-      if (rs.success) {
-        dispatch(
-          loggedIn({
-            isLoggedIn: true,
-            token: rs.accessToken,
-            userData: rs.userData,
-          })
-        );
-        navigate(`/${path.HOME}`);
+    const invalids = isRegister
+      ? validate(payload, setInvalidFields)
+      : validate(data, setInvalidFields);
+    if (invalids === 0) {
+      if (isRegister) {
+        const response = await apiRegister(payload);
+        if (response.success) {
+          setIsVeryfyEmail(true);
+        }
       } else {
-        Swal.fire('Fail!', rs.mes, 'error');
+        const rs = await apiLogin(data);
+        if (rs.success) {
+          dispatch(
+            loggedIn({
+              isLoggedIn: true,
+              token: rs.accessToken,
+              userData: rs.userData,
+            })
+          );
+          navigate(`/${path.HOME}`);
+        } else {
+          Swal.fire('Fail!', rs.mes, 'error');
+        }
       }
     }
   }, [payload, isRegister]);
@@ -139,11 +146,15 @@ const Login = () => {
                 value={payload.firstname}
                 setValue={setPayload}
                 nameKey='firstname'
+                invalidFields={invalidFields}
+                setInvalidFields={setInvalidFields}
               />
               <InputField
                 value={payload.lastname}
                 setValue={setPayload}
                 nameKey='lastname'
+                invalidFields={invalidFields}
+                setInvalidFields={setInvalidFields}
               />
             </div>
           )}
@@ -151,18 +162,24 @@ const Login = () => {
             value={payload.email}
             setValue={setPayload}
             nameKey='email'
+            invalidFields={invalidFields}
+            setInvalidFields={setInvalidFields}
           />
           <InputField
             value={payload.password}
             setValue={setPayload}
             nameKey='password'
             type='password'
+            invalidFields={invalidFields}
+            setInvalidFields={setInvalidFields}
           />
           {isRegister && (
             <InputField
               value={payload.mobile}
               setValue={setPayload}
               nameKey='mobile'
+              invalidFields={invalidFields}
+              setInvalidFields={setInvalidFields}
             />
           )}
           <Button

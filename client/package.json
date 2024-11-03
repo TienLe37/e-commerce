@@ -8,6 +8,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.5.2",
     "axios": "^1.7.7",
+    "formik": "^2.4.6",
     "moment": "^2.30.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -20,7 +21,8 @@
     "redux-persist": "^6.0.0",
     "slick-carousel": "^1.8.1",
     "sweetalert2": "^11.14.4",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "yup": "^1.4.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -28,3 +28,40 @@ export function secondsToHms(d) {
   const s = Math.floor((d % 3600) / 60);
   return { h, m, s };
 }
+
+export const validate = (payload, setInvalidFields) => {
+  let invalids = 0;
+  const formatPayload = Object.entries(payload);
+  for (let arr of formatPayload) {
+    if (arr[1].trim() === '') {
+      invalids++;
+      setInvalidFields((prev) => [...prev, { name: arr[0], mes: 'Required' }]);
+    }
+  }
+  for (let arr of formatPayload) {
+    switch (arr[0]) {
+      case 'email':
+        let regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (!arr[1].match(regex)) {
+          invalids++;
+          setInvalidFields((prev) => [
+            ...prev,
+            { name: arr[0], mes: 'Email invalid' },
+          ]);
+        }
+        break;
+      case 'password':
+        if (arr[1].length < 6) {
+          invalids++;
+          setInvalidFields((prev) => [
+            ...prev,
+            { name: arr[0], mes: 'Password minimum 6characters' },
+          ]);
+        }
+        break;
+      default:
+        break;
+    }
+  }
+  return invalids;
+};

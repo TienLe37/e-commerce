@@ -9,7 +9,7 @@ const InputField = ({
   setInvalidFields,
 }) => {
   return (
-    <div className='w-full'>
+    <div className='w-full flex flex-col relative mb-2 '>
       <label htmlFor={nameKey}>
         {nameKey?.slice(0, 1).toUpperCase() + nameKey?.slice(1)}
       </label>
@@ -21,7 +21,13 @@ const InputField = ({
         onChange={(e) =>
           setValue((pre) => ({ ...pre, [nameKey]: e.target.value }))
         }
+        onFocus={() => setInvalidFields([])}
       />
+      {invalidFields?.some((el) => el.name === nameKey) && (
+        <small className='text-main italic'>
+          {invalidFields?.find((el) => el.name === nameKey)?.mes}
+        </small>
+      )}
     </div>
   );
 };

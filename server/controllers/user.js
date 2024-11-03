@@ -8,7 +8,6 @@ const jwt = require('jsonwebtoken');
 const sendMail = require('../ultils/sendMail');
 const crypto = require('crypto');
 const makeToken = require('uniqid');
-const { response } = require('express');
 //------------------------------------------------------------------------------------------------------------------
 // Đăng ký : Active đăng kí qua email
 const register = asyncHandler(async (req, res) => {
