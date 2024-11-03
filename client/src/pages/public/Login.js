@@ -1,7 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import login from '../../assets/login.jpg';
 import { Button, InputField } from '../../components';
-import { apiForgotPassword, apiLogin, apiRegister } from '../../apis/user';
+import {
+  apiFinalRegister,
+  apiForgotPassword,
+  apiLogin,
+  apiRegister,
+} from '../../apis/user';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import path from '../../utils/path';
@@ -19,6 +24,9 @@ const Login = () => {
     mobile: '',
   });
   const [isRegister, setisRegister] = useState(false);
+  const [isVeryfyEmail, setIsVeryfyEmail] = useState(false);
+  const [token, setToken] = useState('');
+  const [email, setEmail] = useState('');
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const resetPayload = () => {
     setPayload({
@@ -29,20 +37,14 @@ const Login = () => {
       mobile: '',
     });
   };
+  // đăng kí - đăng nhập account
   const handleSubmit = useCallback(async () => {
     const { firstname, lastname, mobile, ...data } = payload;
     if (isRegister) {
       const response = await apiRegister(payload);
       if (response.success) {
-        Swal.fire('Congratulation!', response.mes, 'success').then(() => {
-          setisRegister(false);
-          resetPayload();
-        });
-      } else {
-        Swal.fire('Fail!', response.mes, 'error');
+        setIsVeryfyEmail(true);
       }
-
-      console.log(response);
     } else {
       const rs = await apiLogin(data);
       if (rs.success) {
@@ -59,7 +61,23 @@ const Login = () => {
       }
     }
   }, [payload, isRegister]);
-  const [email, setEmail] = useState('');
+
+  const finalRegister = async () => {
+    const response = await apiFinalRegister(token);
+    if (response.success) {
+      Swal.fire('Congratulation!', response.mes, 'success').then(() => {
+        setisRegister(false);
+        resetPayload();
+      });
+    } else {
+      Swal.fire('Fail!', response.mes, 'error');
+    }
+    setIsVeryfyEmail(false);
+    setToken('');
+  };
+
+  //----------------- quên mật khẩu------------------
+
   const handleForgotPassword = async () => {
     const response = await apiForgotPassword({ email });
     if (response.success) {
@@ -68,6 +86,20 @@ const Login = () => {
   };
   return (
     <div className='w-screen h-screen relative'>
+      {isVeryfyEmail && (
+        <div className=' absolute top-0 left-0 right-0 bottom-0 bg-black/50  z-50 flex flex-col justify-center items-center '>
+          <div className='bg-white w-[500px] rounded-md p-8'>
+            <h3> Mã xác thực đăng kí được gửi qua email. Vui lòng nhập mã: </h3>
+            <input
+              type='text'
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+              className='p-2 border rounded-md outline-none mr-4 '
+            />
+            <Button name='Submit' handleOnClick={finalRegister} hover />
+          </div>
+        </div>
+      )}
       {isForgotPassword && (
         <div className=' absolute top-0 left-0 bottom-0 right-0 bg-white flex flex-col justify-center items-center py-8 z-10 animate-slide-right '>
           <div className='flex flex-col gap-4 '>
