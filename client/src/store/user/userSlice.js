@@ -8,12 +8,12 @@ export const userSlice = createSlice({
     token: null,
   },
   reducers: {
-    register: (state, action) => {
+    loggedIn: (state, action) => {
       state.isLoggedIn = action.payload.isLoggedIn;
       state.current = action.payload.userData;
       state.token = action.payload.token;
     },
   },
 });
-export const { register } = userSlice.actions;
+export const { loggedIn } = userSlice.actions;
 export default userSlice.reducer;

@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import path from '../../utils/path';
 import { useDispatch } from 'react-redux';
-import { register } from '../../store/user/userSlice';
+import { loggedIn } from '../../store/user/userSlice';
 import { toast } from 'react-toastify';
 const Login = () => {
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ const Login = () => {
       const rs = await apiLogin(data);
       if (rs.success) {
         dispatch(
-          register({
+          loggedIn({
             isLoggedIn: true,
             token: rs.accessToken,
             userData: rs.userData,

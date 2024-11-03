@@ -47,7 +47,7 @@ const Home = () => {
           {categories
             ?.filter((el) => el.brand.length > 0)
             .map((el) => (
-              <div key={el.id} className='w-[389px]'>
+              <div key={el._id} className='w-[389px]'>
                 <div className='border flex p-4 gap-4 min-h-[202px]'>
                   <img
                     src={el?.image}
@@ -57,10 +57,13 @@ const Home = () => {
                   <div className='flex-1 text-gray-700  '>
                     <h4 className='font-semibold uppercase'>{el.title}</h4>
                     <ul className='text-sm'>
-                      {el?.brand?.map((item) => (
-                        <span className='flex gap-1 items-center text-gray-700'>
+                      {el?.brand?.map((item, index) => (
+                        <span
+                          key={index}
+                          className='flex gap-1 items-center text-gray-700'
+                        >
                           <IoIosArrowForward size={14} />
-                          <li key={item}>{item}</li>
+                          <li>{item}</li>
                         </span>
                       ))}
                     </ul>
