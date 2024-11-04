@@ -3,7 +3,7 @@ import { formatMoney, renderStar } from '../utils/helpers';
 const ProductCard = ({ price, totalRatings, title, image }) => {
   return (
     <div className='w-1/3 flex flex-auto px-[10px] mb-[20px]'>
-      <div className='w-full flex border'>
+      <div className='w-full flex border cursor-pointer '>
         <img
           src={image}
           alt='products'
