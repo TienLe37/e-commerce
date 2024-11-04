@@ -1,12 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import * as apis from '../../apis';
-
 // get categories
-export const getNewProducts = createAsyncThunk(
-  'product/newProducts',
+export const getCurrent = createAsyncThunk(
+  'user/current',
   async (data, { rejectWithValue }) => {
-    const response = await apis.apiGetProducts({ sort: 'createdAt' });
+    const response = await apis.apiGetCurrent();
     if (!response.success) return rejectWithValue(response);
-    return response.products;
+    return response.rs;
   }
 );

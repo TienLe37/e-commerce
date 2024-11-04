@@ -7,6 +7,7 @@ import {
   AiOutlineStar,
   AiFillEye,
   AiOutlineMenu,
+  AiOutlineLogout,
 } from 'react-icons/ai';
 import { IoIosArrowForward } from 'react-icons/io';
 const icons = {
@@ -20,6 +21,7 @@ const icons = {
   AiFillEye,
   AiOutlineMenu,
   IoIosArrowForward,
+  AiOutlineLogout,
 };
 
 export default icons;

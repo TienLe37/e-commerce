@@ -1,6 +1,6 @@
 import React, { useState, useEffect, memo } from 'react';
 import { AiFillStar, AiOutlineMenu } from 'react-icons/ai';
-import { apiGetProduct } from '../apis/product';
+import { apiGetProducts } from '../apis/product';
 import { formatMoney, renderStar, secondsToHms } from '../utils/helpers';
 import cmsoon from '../assets/cmsoon.jpg';
 import Countdown from './Countdown';
@@ -13,7 +13,7 @@ const DealDailyy = () => {
   const [second, setSecond] = useState(0);
   const [expireTime, setExpireTime] = useState(false);
   const fetchDealDaily = async () => {
-    const response = await apiGetProduct({
+    const response = await apiGetProducts({
       limit: 1,
       page: Math.round(Math.random() * 10),
       totalRatings: 5,

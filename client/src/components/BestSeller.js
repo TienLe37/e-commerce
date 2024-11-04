@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { apiGetProduct } from '../apis/product';
+import { apiGetProducts } from '../apis/product';
 import { CustomSlider } from './';
 import { getNewProducts } from '../store/products/asyncActions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,7 +15,7 @@ const BestSeller = () => {
   const dispatch = useDispatch();
   const { newProducts } = useSelector((state) => state.products);
   const fetchProduct = async () => {
-    const response = await apiGetProduct({ sort: '-sold' });
+    const response = await apiGetProducts({ sort: '-sold' });
     if (response.success) {
       setBestSellers(response.products);
       setProducts(response.products);

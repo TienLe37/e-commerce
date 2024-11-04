@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { apiGetProduct } from '../apis/product';
+import { apiGetProducts } from '../apis/product';
 import ProductCard from './ProductCard';
 
 const FeatureProduct = () => {
   const [products, setProducts] = useState(null);
   const fetchProducts = async () => {
-    const response = await apiGetProduct({
+    const response = await apiGetProducts({
       limit: 9,
       totalRatings: 5,
     });

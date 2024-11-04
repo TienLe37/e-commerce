@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import login from '../../assets/login.jpg';
 import { Button, InputField } from '../../components';
 import {
@@ -8,7 +8,7 @@ import {
   apiRegister,
 } from '../../apis/user';
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import path from '../../utils/path';
 import { useDispatch } from 'react-redux';
 import { loggedIn } from '../../store/user/userSlice';
@@ -39,6 +39,10 @@ const Login = () => {
       mobile: '',
     });
   };
+  useEffect(() => {
+    resetPayload();
+  }, [isRegister]);
+
   // đăng kí - đăng nhập account
   const handleSubmit = useCallback(async () => {
     const { firstname, lastname, mobile, ...data } = payload;
@@ -214,6 +218,14 @@ const Login = () => {
               </span>
             )}
           </div>
+          {!isRegister && (
+            <Link
+              to={`/${path.HOME}`}
+              className='text-gray-800 hover:underline cursor-pointer'
+            >
+              Go Home
+            </Link>
+          )}
         </div>
       </div>
     </div>

@@ -55,7 +55,7 @@ export const validate = (payload, setInvalidFields) => {
           invalids++;
           setInvalidFields((prev) => [
             ...prev,
-            { name: arr[0], mes: 'Password minimum 6characters' },
+            { name: arr[0], mes: 'Password minimum 6 characters' },
           ]);
         }
         break;
