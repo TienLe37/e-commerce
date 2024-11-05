@@ -7,7 +7,7 @@ import icons from '../utils/icons';
 import { SelectOption } from './';
 import { Link } from 'react-router-dom';
 const { BsFillSuitHeartFill, AiFillEye, AiOutlineMenu } = icons;
-function Product({ productData, isNew }) {
+function Product({ productData, isNew, normal }) {
   const [isShowOption, setisShowOption] = useState(false);
   return (
     <div className='w-full text-base px-[10px]'>
@@ -38,11 +38,13 @@ function Product({ productData, isNew }) {
             alt=''
             className='w[243px] h[243px] object-cover '
           />
-          <img
-            src={isNew ? newLabel : hotlabel}
-            alt=''
-            className=' absolute top-[-15px] right-[-15px] w-[50px] h-[50px] object-contain '
-          />
+          {!normal && (
+            <img
+              src={isNew ? newLabel : hotlabel}
+              alt=''
+              className=' absolute top-[-15px] right-[-15px] w-[50px] h-[50px] object-contain '
+            />
+          )}
         </div>
         <div className='  flex flex-col  mt-[15px] items-start gap-1 w-full'>
           <span className='flex h-4'>

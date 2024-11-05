@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { apiGetProduct } from '../../apis/product';
+import { apiGetProduct, apiGetProducts } from '../../apis/product';
 import {
   Breadcrumb,
   Button,
+  CustomSlider,
   ProductExtraItem,
+  ProductInfomation,
   SelectQuantity,
 } from '../../components';
 import Slider from 'react-slick';
 import { formatMoney, formatPrice, renderStar } from '../../utils/helpers';
 import { productExtraInfo } from '../../utils/contants';
-import icons from '../../utils/icons';
 
 const settings = {
   dots: false,
@@ -20,15 +21,23 @@ const settings = {
   slidesToScroll: 1,
 };
 const DetailProduct = () => {
-  const { pid, title } = useParams();
+  const { pid, title, category } = useParams();
   const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const fetchProductData = async () => {
     const response = await apiGetProduct(pid);
     if (response.success) setProduct(response.productData);
   };
+  const fetchProducts = async () => {
+    const response = await apiGetProducts({ category });
+    if (response.success) setRelatedProducts(response.products);
+  };
   useEffect(() => {
-    if (pid) fetchProductData();
+    if (pid) {
+      fetchProductData();
+      fetchProducts();
+    }
   }, [pid]);
   const handleQuantity = useCallback(
     (number) => {
@@ -119,6 +128,15 @@ const DetailProduct = () => {
             />
           ))}
         </div>
+      </div>
+      <div className='w-full mt-8'>
+        <ProductInfomation />
+      </div>
+      <div className='w-full mt-4'>
+        <h3 className='text-[20px]  font-semibold py-[20px] border-b-2 border-main uppercase  '>
+          {`OTHER PRODUCTS OF ${product?.category.toUpperCase()}`}
+        </h3>
+        <CustomSlider products={relatedProducts} normal={true} />
       </div>
       <div className='w-full h-[100px]'></div>
     </div>

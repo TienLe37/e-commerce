@@ -41,6 +41,8 @@ const getProducts = asyncHandler(async (req, res) => {
   // Filtering
   if (queries?.title)
     formatedQueries.title = { $regex: queries.title, $options: 'i' };
+  if (queries?.category)
+    formatedQueries.category = { $regex: queries.category, $options: 'i' };
   // tạo promise dạng pending(không có await) để khi tìm kiếm sẽ chờ người dùng nhập thêm thông tin tìm kiếm
   let queryCommand = Product.find(formatedQueries);
 
@@ -149,7 +151,11 @@ const ratings = asyncHandler(async (req, res) => {
 const uploadImageProduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
   if (!req.files) throw new Error('Missing images');
-  const response = await Product.findByIdAndUpdate(pid,{$push: { images: { $each: req.files.map((el) => el.path) } }},{ new: true });
+  const response = await Product.findByIdAndUpdate(
+    pid,
+    { $push: { images: { $each: req.files.map((el) => el.path) } } },
+    { new: true }
+  );
   return res.status(200).json({
     status: response ? true : false,
     updateProduct: response ? response : 'Cannot upload images',
