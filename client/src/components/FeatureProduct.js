@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { apiGetProducts } from '../apis/product';
 import ProductCard from './ProductCard';
-import { Link } from 'react-router-dom';
 
 const FeatureProduct = () => {
   const [products, setProducts] = useState(null);

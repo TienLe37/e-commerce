@@ -20,6 +20,7 @@ export const createSlug = (string) =>
 
 export const formatMoney = (number) =>
   Number(number.toFixed(1)).toLocaleString();
+export const formatPrice = (number) => Math.round(number / 1000) * 1000;
 
 export function secondsToHms(d) {
   d = Number(d) / 1000;

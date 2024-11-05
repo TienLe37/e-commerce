@@ -6,7 +6,6 @@ import { formatMoney, renderStar } from '../utils/helpers';
 import icons from '../utils/icons';
 import { SelectOption } from './';
 import { Link } from 'react-router-dom';
-import path from '../utils/path';
 const { BsFillSuitHeartFill, AiFillEye, AiOutlineMenu } = icons;
 function Product({ productData, isNew }) {
   const [isShowOption, setisShowOption] = useState(false);
