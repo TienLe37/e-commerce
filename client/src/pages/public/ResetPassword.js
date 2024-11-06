@@ -15,7 +15,7 @@ const ResetPassword = () => {
   };
   return (
     <div className=' absolute top-0 left-0 bottom-0 right-0 bg-white flex flex-col justify-center items-center py-8 z-10 animate-slide-right '>
-      <div className='flex flex-col gap-4 '>
+      <div className='flex flex-col gap-4 shadow-2xl border p-[50px]'>
         <label htmlFor='password'> Enter your new password:</label>
         <input
           type='text'
@@ -26,7 +26,7 @@ const ResetPassword = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <div className='flex items-center justify-end w-full'>
-          <Button name='Submit' handleOnClick={handleResetPassword} hover />
+          <Button children='Submit' handleOnClick={handleResetPassword} hover />
         </div>
       </div>
     </div>

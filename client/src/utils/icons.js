@@ -14,6 +14,7 @@ import {
   AiOutlineMenu,
   AiOutlineLogout,
   AiFillGift,
+  AiOutlineDown,
 } from 'react-icons/ai';
 import { IoIosArrowForward } from 'react-icons/io';
 const icons = {
@@ -22,6 +23,7 @@ const icons = {
   BsHandbagFill,
   FaUserCircle,
   AiFillStar,
+  AiOutlineDown,
   AiOutlineStar,
   BsFillSuitHeartFill,
   AiFillEye,

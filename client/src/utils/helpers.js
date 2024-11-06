@@ -29,7 +29,7 @@ export function secondsToHms(d) {
   const s = Math.floor((d % 3600) / 60);
   return { h, m, s };
 }
-
+// Validate form login registed
 export const validate = (payload, setInvalidFields) => {
   let invalids = 0;
   const formatPayload = Object.entries(payload);

@@ -54,7 +54,7 @@ const Login = () => {
         const response = await apiRegister(payload);
         if (response.success) {
           setIsVeryfyEmail(true);
-        }
+        } else Swal.fire('Fail!', response.mes, 'error');
       } else {
         const rs = await apiLogin(data);
         if (rs.success) {
@@ -107,13 +107,13 @@ const Login = () => {
               onChange={(e) => setToken(e.target.value)}
               className='p-2 border rounded-md outline-none mr-4 '
             />
-            <Button name='Submit' handleOnClick={finalRegister} hover />
+            <Button children='Submit' handleOnClick={finalRegister} hover />
           </div>
         </div>
       )}
       {isForgotPassword && (
         <div className=' absolute top-0 left-0 bottom-0 right-0 bg-white flex flex-col justify-center items-center py-8 z-10 animate-slide-right '>
-          <div className='flex flex-col gap-4 '>
+          <div className='flex flex-col gap-4 shadow-2xl p-[50px]'>
             <label htmlFor='email'> Enter your email:</label>
             <input
               type='text'
@@ -125,12 +125,12 @@ const Login = () => {
             />
             <div className='flex items-center justify-between w-full'>
               <Button
-                name='Back'
+                children='Back'
                 handleOnClick={() => setIsForgotPassword(false)}
                 hover
               />
               <Button
-                name='Submit'
+                children='Submit'
                 handleOnClick={handleForgotPassword}
                 hover
               />
@@ -138,9 +138,11 @@ const Login = () => {
           </div>
         </div>
       )}
-      <img src={login} alt='' className='w-full h-full object-cover' />
-      <div className=' absolute top-0 bottom-0 left-0 right-0 items-center justify-center flex'>
-        <div className='p-8 bg-white flex flex-col items-center rounded-md min-w-[500px]'>
+      {/* <img src={login} alt='' className='w-full h-full object-cover' />
+       */}
+      <div className='w-full h-full object-cover bg-[#f8fafb]'></div>
+      <div className=' absolute top-0 bottom-0  left-0 right-0 items-center justify-center flex'>
+        <div className='p-8 bg-white flex flex-col items-center shadow-2xl border rounded-md min-w-[500px]'>
           <h1 className='text-[28px] font-semibold text-main mb-8'>
             {isRegister ? 'Register' : 'Login'}
           </h1>
@@ -187,7 +189,7 @@ const Login = () => {
             />
           )}
           <Button
-            name={isRegister ? 'Register' : 'Login'}
+            children={isRegister ? 'Register' : 'Login'}
             handleOnClick={handleSubmit}
             fw
             hover
