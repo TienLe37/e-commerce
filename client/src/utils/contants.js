@@ -115,3 +115,41 @@ export const colors = [
   'Green',
   'Blue',
 ];
+
+export const sortBy = [
+  {
+    id: 1,
+    value: 'sold',
+    text: 'Best Selling',
+  },
+  {
+    id: 2,
+    value: 'title',
+    text: 'From A - Z',
+  },
+  {
+    id: 3,
+    value: '-title',
+    text: 'From Z - A',
+  },
+  {
+    id: 4,
+    value: 'price',
+    text: 'Price: Low to High',
+  },
+  {
+    id: 5,
+    value: '-price',
+    text: 'Price: High to Low',
+  },
+  {
+    id: 6,
+    value: 'createdAt',
+    text: 'Date: old to new',
+  },
+  {
+    id: 7,
+    value: '-createdAt',
+    text: 'Date: new to old',
+  },
+];

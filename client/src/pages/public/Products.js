@@ -1,8 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import {
+  createSearchParams,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import { Breadcrumb, Product, SearchItem } from '../../components';
 import { apiGetProducts } from '../../apis';
 import Masonry from 'react-masonry-css';
+import InputSelect from '../../components/InputSelect';
+import { sortBy } from '../../utils/contants';
 const breakpointColumnsObj = {
   default: 4,
   1200: 3,
@@ -11,9 +18,11 @@ const breakpointColumnsObj = {
 };
 
 const Products = () => {
+  const navigate = useNavigate();
   const { category } = useParams();
   const [products, setProducts] = useState(null);
   const [activeClick, setActiveClick] = useState(null);
+  const [sort, setSort] = useState('');
   const fetchProductsbyCategory = async (queries) => {
     const response = await apiGetProducts(queries);
     if (response.success) setProducts(response.products);
@@ -52,6 +61,19 @@ const Products = () => {
     },
     [activeClick]
   );
+  const changeValue = useCallback(
+    (value) => {
+      setSort(value);
+    },
+    [sort]
+  );
+  useEffect(() => {
+    navigate({
+      pathname: `/${category}`,
+      search: createSearchParams({ sort }).toString(),
+    });
+  }, [sort]);
+
   return (
     <div className='w-main'>
       <div className='w-full bg-gray-100 mt-[-24px] py-[15px] px-[5px]'>
@@ -76,7 +98,16 @@ const Products = () => {
             />
           </div>
         </div>
-        <div className='w-1/5 font-semibold text-sm flex-auto'>Sortby</div>
+        <div className='w-1/5 flex flex-col gap-3 '>
+          <span className='font-semibold text-sm'>Sort By</span>
+          <div className='w-full'>
+            <InputSelect
+              value={sort}
+              changeValue={changeValue}
+              options={sortBy}
+            />
+          </div>
+        </div>
       </div>
       <div className='w-full mt-8'>
         <Masonry
