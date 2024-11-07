@@ -31,20 +31,31 @@ const getProducts = asyncHandler(async (req, res) => {
   excludeFields.forEach((el) => delete queries[el]);
   // Chuyển queries từ dạng mảng Object sang string
   let queryString = JSON.stringify(queries);
-  // replace để thêm dâu $trước các từ đặc biệt gte|gt|lte|lt => $gte|$gt|$lte|$lt để mongo hiểu
+  // replace để thêm dâu $trước các từ đặc biệt gte|gt|lte|lt => $gte|$gt|$lte|$lt theo cú pháp moongo
   queryString = queryString.replace(
     /\b(gte|gt|lte|lt)\b/g,
     (match) => `$${match}`
   );
   // format lại queries từ dạng string
   const formatedQueries = JSON.parse(queryString);
+  let colorQueriesObject = {};
   // Filtering
   if (queries?.title)
     formatedQueries.title = { $regex: queries.title, $options: 'i' };
   if (queries?.category)
     formatedQueries.category = { $regex: queries.category, $options: 'i' };
+  // Tìm kiếm cho nhiều color
+  if (queries?.color) {
+    delete formatedQueries.color; // xóa color trong formatedQueries
+    const colorArray = queries?.color?.split(','); // split color: Black, gray -> [Black, gray]
+    const colorQueries = colorArray.map((el) => ({
+      color: { $regex: el, $options: 'i' },
+    }));
+    colorQueriesObject = { $or: colorQueries };
+  }
+  const q = { ...colorQueriesObject, ...formatedQueries };
   // tạo promise dạng pending(không có await) để khi tìm kiếm sẽ chờ người dùng nhập thêm thông tin tìm kiếm
-  let queryCommand = Product.find(formatedQueries);
+  let queryCommand = Product.find(q);
 
   //Sort
   if (req.query.sort) {
@@ -68,11 +79,11 @@ const getProducts = asyncHandler(async (req, res) => {
   // thực thi hàm queryCommand
   queryCommand
     .then(async (response) => {
-      const counts = await Product.find(formatedQueries).countDocuments(); // counts: số lượng sản phẩm thỏa mãn điều kiện
+      const counts = await Product.find(q).countDocuments(); // counts: số lượng sản phẩm thỏa mãn điều kiện
       return res.status(200).json({
-        success: counts > 0 ? true : false,
+        success: counts >= 0 ? true : false,
         counts,
-        products: counts > 0 ? response : 'Cannot get products',
+        products: counts >= 0 ? response : 'Cannot get products',
       });
     })
     .catch((err) => console.log(err));

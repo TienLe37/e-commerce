@@ -102,3 +102,16 @@ export const productInfoTabs = [
     content: '',
   },
 ];
+
+export const colors = [
+  'Black',
+  'Brown',
+  'Gray',
+  'Pink',
+  'White',
+  'Yellow',
+  'Orange',
+  'Purple',
+  'Green',
+  'Blue',
+];

@@ -5,6 +5,7 @@ const instance = axios.create({
 });
 instance.interceptors.request.use(
   function (config) {
+    // Lưu trạng thái đănh nhập User vào localStorage
     let localStorageData = window.localStorage.getItem('persist:shop/user');
     if (localStorageData && typeof localStorageData === 'string') {
       localStorageData = JSON.parse(localStorageData);
