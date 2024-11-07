@@ -2,6 +2,7 @@ import React, { memo, useState, useEffect } from 'react';
 import { AiOutlineDown } from 'react-icons/ai';
 import { colors } from '../utils/contants';
 import { createSearchParams, useNavigate, useParams } from 'react-router-dom';
+import useDebounce from '../hooks/useDebounce';
 
 const SearchItem = ({
   name,
@@ -19,6 +20,10 @@ const SearchItem = ({
 
   const { category } = useParams();
   const navigate = useNavigate();
+  const [price, setPrice] = useState({
+    from: '',
+    to: '',
+  });
   useEffect(() => {
     if (selected.length > 0) {
       navigate({
@@ -27,6 +32,18 @@ const SearchItem = ({
       });
     } else navigate(`/${category}`);
   }, [selected]);
+
+  const debouncePriceFrom = useDebounce(price.from, 700);
+  const debouncePriceTo = useDebounce(price.to, 700);
+  useEffect(() => {
+    const data = {};
+    if (Number(price.from) > 0) data.from = price.from;
+    if (Number(price.to) > 0) data.to = price.to;
+    navigate({
+      pathname: `/${category}`,
+      search: createSearchParams(data).toString(),
+    });
+  }, [debouncePriceFrom, debouncePriceTo]);
 
   return (
     <div
@@ -70,6 +87,48 @@ const SearchItem = ({
                     </label>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+          {type === 'input' && (
+            <div>
+              <div className='p-2 items-center flex justify-between'>
+                <span>Price</span>
+                <span
+                  className='underline cursor-pointer hover:text-main'
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPrice({ from: '', to: '' });
+                  }}
+                >
+                  Reset
+                </span>
+              </div>
+              <div className='flex flex-col items-center p-2 gap-2'>
+                <div className='flex items-center gap-2'>
+                  <label htmlFor='from'>from</label>
+                  <input
+                    className='form-input'
+                    type='number'
+                    id='from'
+                    value={price.from}
+                    onChange={(e) =>
+                      setPrice((pre) => ({ ...pre, from: e.target.value }))
+                    }
+                  />
+                </div>
+                <div className='flex items-center gap-2 ml-[14px]'>
+                  <label htmlFor='to'>to</label>
+                  <input
+                    className='form-input'
+                    type='number'
+                    id='to'
+                    value={price.to}
+                    onChange={(e) =>
+                      setPrice((pre) => ({ ...pre, to: e.target.value }))
+                    }
+                  />
+                </div>
               </div>
             </div>
           )}

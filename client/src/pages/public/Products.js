@@ -21,11 +21,29 @@ const Products = () => {
 
   const [params] = useSearchParams();
   useEffect(() => {
+    // search color
     let param = [];
     for (let i of params.entries()) param.push(i);
     const queries = {};
     for (let i of param) queries[i[0]] = i[1];
-    fetchProductsbyCategory(queries);
+    // search price from-to
+    let priceQuery = {};
+    if (queries.to && queries.from) {
+      priceQuery = {
+        $and: [
+          { price: { gte: queries.from } },
+          { price: { lte: queries.to } },
+        ],
+      };
+      delete queries.price;
+    }
+    if (queries.from) queries.price = { gte: queries.from };
+    if (queries.to) queries.price = { lte: queries.to };
+
+    delete queries.from;
+    delete queries.to;
+    const lastQueries = { ...priceQuery, ...queries };
+    fetchProductsbyCategory(lastQueries);
   }, [params]);
   const changeActiveFilter = useCallback(
     (name) => {
