@@ -10,7 +10,7 @@ const Navigation = () => {
           key={el.id}
           className={({ isActive }) =>
             isActive
-              ? 'pr-12 hover: text-main text-main'
+              ? 'pr-12 hover:text-main text-main'
               : 'pr-12 hover:text-main'
           }
         >

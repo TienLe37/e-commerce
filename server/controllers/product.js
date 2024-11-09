@@ -38,13 +38,13 @@ const getProducts = asyncHandler(async (req, res) => {
   );
   // format lại queries từ dạng string
   const formatedQueries = JSON.parse(queryString);
-  let colorQueriesObject = {};
   // Filtering
   if (queries?.title)
     formatedQueries.title = { $regex: queries.title, $options: 'i' };
   if (queries?.category)
     formatedQueries.category = { $regex: queries.category, $options: 'i' };
   // Tìm kiếm cho nhiều color
+  let colorQueriesObject = {};
   if (queries?.color) {
     delete formatedQueries.color; // xóa color trong formatedQueries
     const colorArray = queries?.color?.split(','); // split color: Black, gray -> [Black, gray]

@@ -96,11 +96,6 @@ export const productInfoTabs = [
     We encourage all customers to bring furniture pads or blankets to protect the items during transport as well as rope or tie downs. Shopify Shop will not be responsible for damage that occurs after leaving the store or during transit. 
     It is the purchaser’s responsibility to make sure the correct items are picked up and in good condition.`,
   },
-  {
-    id: 4,
-    name: 'FEEDBACK',
-    content: '',
-  },
 ];
 
 export const colors = [
@@ -151,5 +146,28 @@ export const sortBy = [
     id: 7,
     value: '-createdAt',
     text: 'Date: new to old',
+  },
+];
+export const voteOptions = [
+  {
+    id: 1,
+    text: 'Terrible',
+  },
+  {
+    id: 2,
+    text: 'Bad',
+  },
+  {
+    id: 3,
+    text: 'Normal',
+  },
+  {
+    id: 4,
+    text: 'Good',
+  },
+
+  {
+    id: 5,
+    text: 'Perfect',
   },
 ];

@@ -38,7 +38,17 @@ const DetailProduct = () => {
       fetchProductData();
       fetchProducts();
     }
+    window.scrollTo(0, 0);
   }, [pid]);
+  // Rerender trang detail product và update ratings ngay sau khi Submit Vote& Review
+  const [update, setUpdate] = useState(false);
+  const reRenderAfterVote = useCallback(() => {
+    setUpdate(!update);
+  }, [update]);
+  useEffect(() => {
+    if (pid) fetchProductData();
+  }, [update]);
+  //------------------------------
   const handleQuantity = useCallback(
     (number) => {
       console.log(number);
@@ -91,13 +101,13 @@ const DetailProduct = () => {
             <h2 className='text-[30px] font-semibold '>{`${formatMoney(
               formatPrice(product?.price)
             )} VNĐ`}</h2>
-            <span className='text-sm text-main'>{`Kho: ${product?.quantity}`}</span>
+            <span className='text-sm text-main'>{`In Stock: ${product?.quantity}`}</span>
           </div>
           <div className='flex items-center gap-1'>
             {renderStar(product?.totalRatings, 14)?.map((el, index) => (
               <span key={index}>{el}</span>
             ))}
-            <span className='text-sm text-main italic'>{` (Đã bán : ${product?.sold} cái)`}</span>
+            <span className='text-sm text-main italic'>{` (Sold : ${product?.sold} )`}</span>
           </div>
           <ul className=' list-square text-sm text-gray-500  pl-4'>
             {product?.description?.map((el, index) => (
@@ -130,7 +140,13 @@ const DetailProduct = () => {
         </div>
       </div>
       <div className='w-full mt-8'>
-        <ProductInfomation />
+        <ProductInfomation
+          totalRatings={product?.totalRatings}
+          ratings={product?.ratings}
+          nameProduct={product?.title}
+          pid={product?._id}
+          reRenderAfterVote={reRenderAfterVote}
+        />
       </div>
       <div className='w-full mt-4'>
         <h3 className='text-[20px]  font-semibold py-[20px] border-b-2 border-main uppercase  '>
