@@ -1,18 +1,38 @@
 import React, { memo, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import path from '../utils/path';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCurrent } from '../store/user/asyncActions';
 import { AiOutlineLogout } from 'react-icons/ai';
 import { logout } from '../store/user/userSlice';
+import Swal from 'sweetalert2';
+import { current } from '@reduxjs/toolkit';
 
 const TopHeader = () => {
   const dispatch = useDispatch();
-  const { isLoggedIn } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const { isLoggedIn, current } = useSelector((state) => state.user);
   useEffect(() => {
-    if (isLoggedIn) dispatch(getCurrent());
+    const setTimeoutId = setTimeout(() => {
+      if (isLoggedIn) dispatch(getCurrent());
+    }, 300);
+    return () => {
+      clearTimeout(setTimeoutId);
+    };
   }, [dispatch, isLoggedIn]);
-
+  const handleLogout = () => {
+    Swal.fire({
+      text: 'Do you want to Log out?',
+      showCancelButton: true,
+      cancelButtonText: 'Cancel',
+      confirmButtonText: 'Log out',
+    }).then((rs) => {
+      if (rs.isConfirmed) {
+        dispatch(logout());
+        navigate(`/${path.HOME}`);
+      }
+    });
+  };
   return (
     <div className='h-[40px] w-full bg-main flex  items-center justify-center '>
       <div className='w-main flex items-center justify-between text-xs text-white '>
@@ -20,17 +40,17 @@ const TopHeader = () => {
 
         {isLoggedIn ? (
           <div className='flex gap-4 text-sm items-center '>
-            <span>{`Welcome you to website `}</span>
+            <span>{`Welcome, ${current?.firstname} ${current?.lastname}`}</span>
             <span
-              onClick={() => dispatch(logout())}
-              className='hover:rounded-full hover:bg-gray-200 cursor-pointer hover:text-main p-2'
+              onClick={() => handleLogout()}
+              className=' hover:rounded-full hover:bg-gray-200 cursor-pointer hover:text-main p-1 mr-[-15px]'
             >
               <AiOutlineLogout size={20} />
             </span>
           </div>
         ) : (
           <Link className='hover:text-gray-800' to={`/${path.LOGIN}`}>
-            Sign In Or Create Account{' '}
+            Sign In Or Create Account
           </Link>
         )}
       </div>
