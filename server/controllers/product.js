@@ -14,7 +14,13 @@ const createProduct = asyncHandler(async (req, res) => {
 //Lấy một sản phẩm
 const getProduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
-  const product = await Product.findById(pid);
+  const product = await Product.findById(pid).populate({
+    path: 'ratings',
+    populate: {
+      path: 'postedBy',
+      select: 'firstname lastname avatar',
+    },
+  });
   return res.status(200).json({
     success: product ? true : false,
     productData: product ? product : 'Cannot get product',
@@ -113,7 +119,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // đánh giá sản phẩm
 const ratings = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { star, comment, pid } = req.body;
+  const { star, comment, pid, updatedAt } = req.body;
   if (!_id || !pid) throw new Error('Missing inputs');
   // tìm kiếm sản phẩm cần đánh giá bằng pid
   const ratingProduct = await Product.findById(pid);
@@ -129,7 +135,11 @@ const ratings = asyncHandler(async (req, res) => {
         ratings: { $elemMatch: alreadyRating }, // nếu alreadyRating đã match với 1 trường ratings
       },
       {
-        $set: { 'ratings.$.star': star, 'ratings.$.comment': comment }, // set: cập nhật lại star comment
+        $set: {
+          'ratings.$.star': star,
+          'ratings.$.comment': comment,
+          'ratings.$.updatedAt': updatedAt,
+        }, // set: cập nhật lại star comment
       },
       { new: true }
     );
@@ -139,7 +149,7 @@ const ratings = asyncHandler(async (req, res) => {
       // tìm pid
       pid,
       {
-        $push: { ratings: { star, comment, postedBy: _id } }, // đẩy star commnet vào ratings
+        $push: { ratings: { star, comment, postedBy: _id, updatedAt } }, // đẩy star commnet vào ratings
       },
       { new: true }
     );

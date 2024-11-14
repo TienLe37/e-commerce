@@ -23,3 +23,4 @@ export { default as InputSelect } from './SearchItem';
 export { default as Votebar } from './Votebar';
 export { default as VoteOption } from './VoteOption';
 export { default as Modal } from './Modal';
+export { default as Comment } from './Comment';

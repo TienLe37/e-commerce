@@ -8,7 +8,7 @@ import { apiRatings } from '../apis';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import path from '../utils/path';
-
+import { Comment } from './';
 const ProductInfomation = ({
   totalRatings,
   ratings,
@@ -25,7 +25,7 @@ const ProductInfomation = ({
       alert('Please vote before submit');
       return;
     }
-    await apiRatings({ star: score, comment, pid });
+    await apiRatings({ star: score, comment, pid, updatedAt: Date.now() });
     reRenderAfterVote();
     dispatch(showModal({ isShowModal: false, modalChildren: null }));
   };
@@ -107,6 +107,17 @@ const ProductInfomation = ({
       <div className='flex flex-col justify-center items-center text-sm p-4 gap-2`'>
         <span>Do you review this product?</span>
         <Button handleOnClick={handleRatingNow}>Rating now!</Button>
+      </div>
+      <div className='flex flex-col gap-4 border p-[20px]'>
+        {ratings?.map((el) => (
+          <Comment
+            key={el._id}
+            star={el.star}
+            updatedAt={el.updatedAt}
+            comment={el.comment}
+            name={`${el.postedBy?.lastname} ${el.postedBy?.firstname} `}
+          />
+        ))}
       </div>
     </div>
   );
