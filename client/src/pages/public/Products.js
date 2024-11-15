@@ -10,6 +10,7 @@ import { apiGetProducts } from '../../apis';
 import Masonry from 'react-masonry-css';
 import InputSelect from '../../components/InputSelect';
 import { sortBy } from '../../utils/contants';
+import Pagination from '../../components/Pagination';
 const breakpointColumnsObj = {
   default: 4,
   1200: 3,
@@ -25,16 +26,14 @@ const Products = () => {
   const [sort, setSort] = useState('');
   const fetchProductsbyCategory = async (queries) => {
     const response = await apiGetProducts(queries);
-    if (response.success) setProducts(response.products);
+    if (response.success) setProducts(response);
   };
 
   const [params] = useSearchParams();
   useEffect(() => {
     // search color
-    let param = [];
-    for (let i of params.entries()) param.push(i);
     const queries = {};
-    for (let i of param) queries[i[0]] = i[1];
+    for (let i of params) queries[i[0]] = i[1];
     // search price from-to
     let priceQuery = {};
     if (queries.to && queries.from) {
@@ -53,6 +52,7 @@ const Products = () => {
     delete queries.to;
     const lastQueries = { ...priceQuery, ...queries };
     fetchProductsbyCategory(lastQueries);
+    // window.scrollTo(0, 0);
   }, [params]);
   const changeActiveFilter = useCallback(
     (name) => {
@@ -68,10 +68,12 @@ const Products = () => {
     [sort]
   );
   useEffect(() => {
-    navigate({
-      pathname: `/${category}`,
-      search: createSearchParams({ sort }).toString(),
-    });
+    if (sort) {
+      navigate({
+        pathname: `/${category}`,
+        search: createSearchParams({ sort }).toString(),
+      });
+    }
   }, [sort]);
 
   return (
@@ -115,10 +117,13 @@ const Products = () => {
           className='my-masonry-grid flex mx-[-10px]'
           columnClassName='my-masonry-grid_column'
         >
-          {products?.map((el) => (
+          {products?.products?.map((el) => (
             <Product key={el._id} productData={el} normal={true} />
           ))}
         </Masonry>
+      </div>
+      <div className='w-full m-auto my-4 flex justify-center'>
+        <Pagination totalCount={products?.counts} />
       </div>
     </div>
   );
