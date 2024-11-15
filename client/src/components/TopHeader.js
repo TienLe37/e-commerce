@@ -4,14 +4,13 @@ import path from '../utils/path';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCurrent } from '../store/user/asyncActions';
 import { AiOutlineLogout } from 'react-icons/ai';
-import { logout } from '../store/user/userSlice';
+import { logout, clearMessage } from '../store/user/userSlice';
 import Swal from 'sweetalert2';
-import { current } from '@reduxjs/toolkit';
 
 const TopHeader = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoggedIn, current } = useSelector((state) => state.user);
+  const { isLoggedIn, current, mes } = useSelector((state) => state.user);
   useEffect(() => {
     const setTimeoutId = setTimeout(() => {
       if (isLoggedIn) dispatch(getCurrent());
@@ -20,6 +19,14 @@ const TopHeader = () => {
       clearTimeout(setTimeoutId);
     };
   }, [dispatch, isLoggedIn]);
+  useEffect(() => {
+    if (mes)
+      Swal.fire('Oops!', mes, 'info').then(() => {
+        dispatch(clearMessage());
+        navigate(`/${path.LOGIN}`);
+      });
+  }, [mes]);
+
   const handleLogout = () => {
     Swal.fire({
       text: 'Do you want to Log out?',
