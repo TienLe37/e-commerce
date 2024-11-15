@@ -1,7 +1,12 @@
 import React, { memo, useState, useEffect } from 'react';
 import { AiOutlineDown } from 'react-icons/ai';
 import { colors } from '../utils/contants';
-import { createSearchParams, useNavigate, useParams } from 'react-router-dom';
+import {
+  createSearchParams,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import useDebounce from '../hooks/useDebounce';
 
 const SearchItem = ({
@@ -17,7 +22,7 @@ const SearchItem = ({
       setSelected((prev) => prev.filter((el) => el !== e.target.value));
     else setSelected((prev) => [...prev, e.target.value]);
   };
-
+  const [params] = useSearchParams();
   const { category } = useParams();
   const navigate = useNavigate();
   const [price, setPrice] = useState({
@@ -25,28 +30,36 @@ const SearchItem = ({
     to: '',
   });
   useEffect(() => {
+    let queries = {};
+    for (let i of params) queries[i[0]] = i[1];
     if (selected.length > 0) {
-      navigate({
-        pathname: `/${category}`,
-        search: createSearchParams({ color: selected.join(',') }).toString(),
-      });
-    } else navigate(`/${category}`);
+      queries.color = selected.join(',');
+      queries.page = 1;
+    } else delete queries.color;
+    navigate({
+      pathname: `/${category}`,
+      search: createSearchParams(queries).toString(),
+    });
   }, [selected]);
 
   const debouncePriceFrom = useDebounce(price.from, 700);
   const debouncePriceTo = useDebounce(price.to, 700);
   useEffect(() => {
-    const data = {};
-    if (Number(price.from) > 0) data.from = price.from;
-    if (Number(price.to) > 0) data.to = price.to;
+    let queries = {};
+    for (let i of params) queries[i[0]] = i[1];
+    if (Number(price.from) > 0) queries.from = price.from;
+    else delete queries.from;
+    if (Number(price.to) > 0) queries.to = price.to;
+    else delete queries.to;
+    queries.page = 1;
     navigate({
       pathname: `/${category}`,
-      search: createSearchParams(data).toString(),
+      search: createSearchParams(queries).toString(),
     });
   }, [debouncePriceFrom, debouncePriceTo]);
   useEffect(() => {
     if (price.from && price.to && price.from > price.to)
-      alert('Price from cannot greater than price to');
+      return alert('Price from cannot greater than price to');
   }, [price]);
 
   return (

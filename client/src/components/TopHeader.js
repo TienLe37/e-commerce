@@ -38,7 +38,7 @@ const TopHeader = () => {
       <div className='w-main flex items-center justify-between text-xs text-white '>
         <span>ORDER ONLINE OR CALL US 09686868686</span>
 
-        {isLoggedIn ? (
+        {isLoggedIn && current ? (
           <div className='flex gap-4 text-sm items-center '>
             <span>{`Welcome, ${current?.firstname} ${current?.lastname}`}</span>
             <span

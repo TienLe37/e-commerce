@@ -44,15 +44,16 @@ const Products = () => {
         ],
       };
       delete queries.price;
+    } else {
+      if (queries.from) queries.price = { gte: queries.from };
+      if (queries.to) queries.price = { lte: queries.to };
     }
-    if (queries.from) queries.price = { gte: queries.from };
-    if (queries.to) queries.price = { lte: queries.to };
 
     delete queries.from;
     delete queries.to;
     const lastQueries = { ...priceQuery, ...queries };
     fetchProductsbyCategory(lastQueries);
-    // window.scrollTo(0, 0);
+    window.scrollTo(0, 0);
   }, [params]);
   const changeActiveFilter = useCallback(
     (name) => {
