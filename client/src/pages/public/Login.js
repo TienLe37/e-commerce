@@ -1,19 +1,19 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { Button, InputField, Loading } from '../../components';
+import { Button, InputField, Loading } from 'components';
 import {
   apiFinalRegister,
   apiForgotPassword,
   apiLogin,
   apiRegister,
-} from '../../apis/user';
+} from 'apis/user';
 import Swal from 'sweetalert2';
 import { Link, useNavigate } from 'react-router-dom';
-import path from '../../utils/path';
+import path from 'utils/path';
 import { useDispatch } from 'react-redux';
-import { loggedIn } from '../../store/user/userSlice';
+import { loggedIn } from 'store/user/userSlice';
 import { toast } from 'react-toastify';
-import { validate } from '../../utils/helpers';
-import { showModal } from '../../store/app/appSlice';
+import { validate } from 'utils/helpers';
+import { showModal } from 'store/app/appSlice';
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();

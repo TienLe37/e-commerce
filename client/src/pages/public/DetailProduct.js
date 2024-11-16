@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { apiGetProduct, apiGetProducts } from '../../apis/product';
+import { apiGetProduct, apiGetProducts } from 'apis/product';
 import {
   Breadcrumb,
   Button,
@@ -8,10 +8,10 @@ import {
   ProductExtraItem,
   ProductInfomation,
   SelectQuantity,
-} from '../../components';
+} from 'components';
 import Slider from 'react-slick';
-import { formatMoney, formatPrice, renderStar } from '../../utils/helpers';
-import { productExtraInfo } from '../../utils/contants';
+import { formatMoney, formatPrice, renderStar } from 'utils/helpers';
+import { productExtraInfo } from 'utils/contants';
 
 const settings = {
   dots: false,

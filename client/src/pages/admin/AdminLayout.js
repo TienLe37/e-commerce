@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
-import path from '../../utils/path';
+import path from 'utils/path';
 
 const AdminLayout = () => {
   const { isLoggedIn, current } = useSelector((state) => state.user);
