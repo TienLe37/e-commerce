@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 const Button = ({ children, handleOnClick, style, fw, hover }) => {
   return (
@@ -19,4 +19,4 @@ const Button = ({ children, handleOnClick, style, fw, hover }) => {
   );
 };
 
-export default Button;
+export default memo(Button);

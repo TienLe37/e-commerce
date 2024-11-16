@@ -9,7 +9,7 @@ import {
   DealDailyy,
   FeatureProduct,
   CustomSlider,
-} from '../../components';
+} from 'components';
 import { useSelector } from 'react-redux';
 const { IoIosArrowForward } = icons;
 const Home = () => {

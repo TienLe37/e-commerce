@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, memo } from 'react';
 import { AiFillStar } from 'react-icons/ai';
 const Votebar = ({ number, ratingTotal, ratingCount }) => {
   const percerRef = useRef();
@@ -25,4 +25,4 @@ const Votebar = ({ number, ratingTotal, ratingCount }) => {
   );
 };
 
-export default Votebar;
+export default memo(Votebar);

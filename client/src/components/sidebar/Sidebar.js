@@ -1,5 +1,5 @@
-import React from 'react';
-import { createSlug } from '../utils/helpers';
+import React, { memo } from 'react';
+import { createSlug } from 'utils/helpers';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 const Sidebar = () => {
@@ -23,4 +23,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default memo(Sidebar);

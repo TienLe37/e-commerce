@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 const InputField = ({
   value,
@@ -32,4 +32,4 @@ const InputField = ({
   );
 };
 
-export default InputField;
+export default memo(InputField);

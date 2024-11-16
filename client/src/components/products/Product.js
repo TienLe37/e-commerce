@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import cmsoon from '../assets/cmsoon.jpg';
-import hotlabel from '../assets/hotlabel.png';
-import newLabel from '../assets/newLabel.png';
-import { formatMoney, renderStar } from '../utils/helpers';
-import icons from '../utils/icons';
-import { SelectOption } from './';
+import React, { memo, useState } from 'react';
+import cmsoon from 'assets/cmsoon.jpg';
+import hotlabel from 'assets/hotlabel.png';
+import newLabel from 'assets/newLabel.png';
+import { formatMoney, renderStar } from 'utils/helpers';
+import icons from 'utils/icons';
+import { SelectOption } from 'components';
 import { Link } from 'react-router-dom';
 const { BsFillSuitHeartFill, AiFillEye, AiOutlineMenu } = icons;
 function Product({ productData, isNew, normal }) {
@@ -60,4 +60,4 @@ function Product({ productData, isNew, normal }) {
   );
 }
 
-export default Product;
+export default memo(Product);

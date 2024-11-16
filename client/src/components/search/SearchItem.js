@@ -1,13 +1,13 @@
 import React, { memo, useState, useEffect } from 'react';
 import { AiOutlineDown } from 'react-icons/ai';
-import { colors } from '../utils/contants';
+import { colors } from '../../utils/contants';
 import {
   createSearchParams,
   useNavigate,
   useParams,
   useSearchParams,
 } from 'react-router-dom';
-import useDebounce from '../hooks/useDebounce';
+import useDebounce from '../../hooks/useDebounce';
 
 const SearchItem = ({
   name,

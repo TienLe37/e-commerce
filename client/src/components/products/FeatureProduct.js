@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { apiGetProducts } from '../apis/product';
+import React, { memo, useEffect, useState } from 'react';
+import { apiGetProducts } from 'apis/product';
 import ProductCard from './ProductCard';
 
 const FeatureProduct = () => {
@@ -56,4 +56,4 @@ const FeatureProduct = () => {
   );
 };
 
-export default FeatureProduct;
+export default memo(FeatureProduct);

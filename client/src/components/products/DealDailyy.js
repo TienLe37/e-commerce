@@ -1,9 +1,9 @@
 import React, { useState, useEffect, memo } from 'react';
 import { AiFillStar, AiOutlineMenu } from 'react-icons/ai';
-import { apiGetProducts } from '../apis/product';
-import { formatMoney, renderStar, secondsToHms } from '../utils/helpers';
-import cmsoon from '../assets/cmsoon.jpg';
-import Countdown from './Countdown';
+import { apiGetProducts } from 'apis/product';
+import { formatMoney, renderStar, secondsToHms } from 'utils/helpers';
+import cmsoon from 'assets/cmsoon.jpg';
+import Countdown from 'components/common/Countdown';
 import moment from 'moment';
 let idInterval;
 const DealDailyy = () => {

@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { memo } from 'react';
 import {
   useNavigate,
   useParams,
@@ -36,4 +37,4 @@ const PagiItem = ({ children }) => {
   );
 };
 
-export default PagiItem;
+export default memo(PagiItem);

@@ -1,7 +1,7 @@
-import React from 'react';
-import avatar from '../assets/avatarDefault.png';
+import React, { memo } from 'react';
+import avatar from 'assets/avatarDefault.png';
 import moment from 'moment';
-import { renderStar } from '../utils/helpers';
+import { renderStar } from 'utils/helpers';
 const Comment = ({
   image = avatar,
   name = 'Anonymous',
@@ -44,4 +44,4 @@ const Comment = ({
   );
 };
 
-export default Comment;
+export default memo(Comment);

@@ -1,5 +1,5 @@
-import React from 'react';
-import { navigation } from '../utils/contants';
+import React, { memo } from 'react';
+import { navigation } from '../../utils/contants';
 import { NavLink } from 'react-router-dom';
 const Navigation = () => {
   return (
@@ -21,4 +21,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation;
+export default memo(Navigation);

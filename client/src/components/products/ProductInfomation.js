@@ -1,14 +1,14 @@
 import React, { memo, useState } from 'react';
-import { productInfoTabs } from '../utils/contants';
-import { Button, Votebar, VoteOption } from './';
-import { renderStar } from '../utils/helpers';
+import { productInfoTabs } from 'utils/contants';
+import { Button, Votebar, VoteOption } from 'components';
+import { renderStar } from 'utils/helpers';
 import { useDispatch, useSelector } from 'react-redux';
-import { showModal } from '../store/app/appSlice';
-import { apiRatings } from '../apis';
+import { showModal } from 'store/app/appSlice';
+import { apiRatings } from 'apis';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
-import path from '../utils/path';
-import { Comment } from './';
+import path from 'utils/path';
+import { Comment } from 'components';
 const ProductInfomation = ({
   totalRatings,
   ratings,
@@ -72,8 +72,8 @@ const ProductInfomation = ({
         ))}
       </div>
       <div className='w-full border p-4 h-[300px]'>
-        {productInfoTabs.map((el) => (
-          <p>{el.id === activeTab && el.content}</p>
+        {productInfoTabs.map((el, index) => (
+          <p key={index}>{el.id === activeTab && el.content}</p>
         ))}
       </div>
       <h3 className='text-[20px]  font-semibold py-[20px] border-b-2 border-main uppercase  '>

@@ -5,12 +5,12 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom';
-import { Breadcrumb, Product, SearchItem } from '../../components';
-import { apiGetProducts } from '../../apis';
+import { Breadcrumb, Product, SearchItem } from 'components';
+import { apiGetProducts } from 'apis';
 import Masonry from 'react-masonry-css';
-import InputSelect from '../../components/InputSelect';
-import { sortBy } from '../../utils/contants';
-import Pagination from '../../components/Pagination';
+import InputSelect from 'components/inputs/InputSelect';
+import { sortBy } from 'utils/contants';
+import Pagination from 'components/pagination/Pagination';
 const breakpointColumnsObj = {
   default: 4,
   1200: 3,

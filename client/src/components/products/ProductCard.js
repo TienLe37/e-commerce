@@ -1,5 +1,5 @@
-import React from 'react';
-import { formatMoney, renderStar } from '../utils/helpers';
+import React, { memo } from 'react';
+import { formatMoney, renderStar } from 'utils/helpers';
 const ProductCard = ({ price, totalRatings, title, image }) => {
   return (
     <div className='w-1/3 flex flex-auto px-[10px] mb-[20px]'>
@@ -25,4 +25,4 @@ const ProductCard = ({ price, totalRatings, title, image }) => {
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);

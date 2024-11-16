@@ -1,10 +1,10 @@
-import React, { Fragment } from 'react';
-import icons from '../utils/icons';
+import React, { Fragment, memo } from 'react';
+import icons from 'utils/icons';
 import { useSelector } from 'react-redux';
 
-import logo from '../assets/logo.png';
+import logo from 'assets/logo.png';
 import { Link } from 'react-router-dom';
-import path from '../utils/path';
+import path from 'utils/path';
 const { RiPhoneFill, MdEmail, BsHandbagFill, FaUserCircle } = icons;
 const Header = () => {
   const { current } = useSelector((state) => state.user);
@@ -54,4 +54,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default memo(Header);
