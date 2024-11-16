@@ -1,6 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import login from '../../assets/login.jpg';
-import { Button, InputField } from '../../components';
+import { Button, InputField, Loading } from '../../components';
 import {
   apiFinalRegister,
   apiForgotPassword,
@@ -14,9 +13,11 @@ import { useDispatch } from 'react-redux';
 import { loggedIn } from '../../store/user/userSlice';
 import { toast } from 'react-toastify';
 import { validate } from '../../utils/helpers';
+import { showModal } from '../../store/app/appSlice';
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const [payload, setPayload] = useState({
     email: '',
     password: '',
@@ -51,7 +52,9 @@ const Login = () => {
       : validate(data, setInvalidFields);
     if (invalids === 0) {
       if (isRegister) {
+        dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }));
         const response = await apiRegister(payload);
+        dispatch(showModal({ isShowModal: false, modalChildren: null }));
         if (response.success) {
           setIsVeryfyEmail(true);
         } else Swal.fire('Fail!', response.mes, 'error');
