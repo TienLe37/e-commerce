@@ -27,3 +27,4 @@ export { default as Comment } from './vote/Comment';
 export { default as PagiItem } from './pagination/PagiItem';
 export { default as Pagination } from './pagination/Pagination';
 export { default as Loading } from './common/Loading';
+export { default as AdminSidebar } from './sidebar/AdminSidebar';

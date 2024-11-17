@@ -1,8 +1,10 @@
 import { BsReplyFill, BsShieldShaded } from 'react-icons/bs';
 import path from './path';
-import { RiTruckFill } from 'react-icons/ri';
-import { AiFillGift } from 'react-icons/ai';
+import { RiBillLine, RiTruckFill } from 'react-icons/ri';
+import { AiFillGift, AiOutlineDashboard } from 'react-icons/ai';
+import { TbBrandProducthunt } from 'react-icons/tb';
 import { FaTty } from 'react-icons/fa';
+import { MdGroups } from 'react-icons/md';
 export const navigation = [
   {
     id: 1,
@@ -169,5 +171,45 @@ export const voteOptions = [
   {
     id: 5,
     text: 'Perfect',
+  },
+];
+// Admin
+export const adminSidebar = [
+  {
+    id: 1,
+    type: 'SINGLE',
+    text: 'Dashboard',
+    path: `/${path.ADMIN}/${path.DASHBOARD}`,
+    icon: <AiOutlineDashboard size={30} />,
+  },
+  {
+    id: 2,
+    type: 'SINGLE',
+    text: 'Manage users',
+    path: `/${path.ADMIN}/${path.MANAGE_USER}`,
+    icon: <MdGroups size={30} />,
+  },
+  {
+    id: 3,
+    type: 'PARENT',
+    text: 'Manage Product',
+    icon: <TbBrandProducthunt size={30} />,
+    submenu: [
+      {
+        text: 'Create product',
+        path: `/${path.ADMIN}/${path.CREATE_PRODUCTS}`,
+      },
+      {
+        text: 'Manage product',
+        path: `/${path.ADMIN}/${path.MANAGE_PRODUCTS}`,
+      },
+    ],
+  },
+  {
+    id: 4,
+    type: 'SINGLE',
+    text: 'Manage orders',
+    path: `/${path.ADMIN}/${path.MANAGE_ORDER}`,
+    icon: <RiBillLine size={30} />,
   },
 ];
