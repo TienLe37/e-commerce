@@ -8,6 +8,8 @@ const jwt = require('jsonwebtoken');
 const sendMail = require('../ultils/sendMail');
 const crypto = require('crypto');
 const makeToken = require('uniqid');
+const { users } = require('../ultils/constants');
+
 //------------------------------------------------------------------------------------------------------------------
 // Đăng ký : Active đăng kí qua email
 const register = asyncHandler(async (req, res) => {
@@ -215,12 +217,59 @@ const resetPassword = asyncHandler(async (req, res) => {
 
 // get all user : role: admin
 const getUsers = asyncHandler(async (req, res) => {
-  const response = await User.find().select('-refreshToken -password -role ');
-  return res.status(200).json({
-    success: response ? true : false,
-    users: response,
-  });
+  const queries = { ...req.query };
+  const excludeFields = ['limit', 'sort', 'page', 'fields'];
+  excludeFields.forEach((el) => delete queries[el]);
+  let queryString = JSON.stringify(queries);
+  queryString = queryString.replace(
+    /\b(gte|gt|lte|lt)\b/g,
+    (match) => `$${match}`
+  );
+  const formatedQueries = JSON.parse(queryString);
+  // Filtering
+  if (queries?.name)
+    formatedQueries.name = { $regex: queries.name, $options: 'i' };
+  if (req.query.q) {
+    delete formatedQueries.q;
+    formatedQueries['$or'] = [
+      { firstname: { $regex: req.query.q, $options: 'i' } },
+      { lastname: { $regex: req.query.q, $options: 'i' } },
+      { email: { $regex: req.query.q, $options: 'i' } },
+    ];
+  }
+  let queryCommand = User.find(formatedQueries);
+  //Sort
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(',').join(' ');
+    queryCommand = queryCommand.sort(sortBy);
+  }
+  // Lọc các fields muốn lấy ra ( hoặc không)
+  if (req.query.fields) {
+    const fields = req.query.fields.split(',').join(' ');
+    queryCommand = queryCommand.select(fields);
+  }
+  /** PHÂN TRANG(pagingnation)
+   * Limit: số Object lấy ra sau 1 lần gọi api
+   * page: số thứ tự trang: 1 2 3 ......10 ......
+   * skip: skip số Obbject
+   **/
+  const limit = +req.query.limit || process.env.LIMIT_USER;
+  const page = +req.query.page || 1;
+  const skip = (page - 1) * limit;
+  queryCommand = queryCommand.skip(skip).limit(limit);
+  // thực thi hàm queryCommand
+  queryCommand
+    .then(async (response) => {
+      const counts = await User.find(formatedQueries).countDocuments(); // counts: số lượng sản phẩm thỏa mãn điều kiện
+      return res.status(200).json({
+        success: counts >= 0 ? true : false,
+        counts,
+        users: counts >= 0 ? response : 'Cannot get Users',
+      });
+    })
+    .catch((err) => console.log(err));
 });
+
 // Delete user : role : admin
 const deleteUser = asyncHandler(async (req, res) => {
   const { _id } = req.query;
@@ -321,6 +370,14 @@ const addToCart = asyncHandler(async (req, res) => {
   }
 });
 
+/// mock User
+const createUsers = asyncHandler(async (req, res) => {
+  const response = await User.create(users);
+  return res.status(200).json({
+    success: response ? true : false,
+    users: response ? response : 'Cannot create user',
+  });
+});
 module.exports = {
   register,
   login,
@@ -336,4 +393,5 @@ module.exports = {
   updateUserAddress,
   addToCart,
   finalRegister,
+  createUsers,
 };
