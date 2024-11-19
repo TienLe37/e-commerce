@@ -1,17 +1,35 @@
-import { apiGetUsers } from 'apis';
-import { InputField, Pagination } from 'components';
+import { apiDeleteUserByAdmin, apiGetUsers, apiUpdateUserByAdmin } from 'apis';
+import clsx from 'clsx';
+import { Button, InputField, InputForm, Pagination, Select } from 'components';
 import useDebounce from 'hooks/useDebounce';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'react-router-dom';
-import { roles } from 'utils/contants';
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+import { isBlockedUser, roles } from 'utils/contants';
 
 const ManageUser = () => {
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+    reset,
+  } = useForm({
+    email: '',
+    firstname: '',
+    lastname: '',
+    role: '',
+    mobile: '',
+    isBlocked: '',
+  });
   const [users, setUsers] = useState();
   const [queries, setQueries] = useState({
     q: '',
   });
   const [params] = useSearchParams();
+  const [editUser, setEditUser] = useState(null);
   const fetchUsers = async (params) => {
     const response = await apiGetUsers({
       ...params,
@@ -19,36 +37,78 @@ const ManageUser = () => {
     });
     if (response.success) setUsers(response);
   };
+  const [update, setUpdate] = useState(false);
+  const render = useCallback(() => {
+    setUpdate(!update);
+  }, [update]);
   const queriesDebounce = useDebounce(queries.q, 800);
   useEffect(() => {
     const queries = Object.fromEntries([...params]);
     if (queriesDebounce) queries.q = queriesDebounce;
     fetchUsers(queries);
-  }, [queriesDebounce, params]);
+  }, [queriesDebounce, params, update]);
+  const handleUpdateUser = async (data) => {
+    const response = await apiUpdateUserByAdmin(data, editUser._id);
+    if (response.success) {
+      setEditUser(null);
+      render();
+      toast.success(response.mes);
+    } else toast.error(response.mes);
+  };
+  const handleDeleteUser = (uid) => {
+    Swal.fire({
+      title: 'Delete User',
+      text: 'Are you sure delete user?',
+      showCancelButton: true,
+    }).then(async (rs) => {
+      if (rs.isConfirmed) {
+        const response = await apiDeleteUserByAdmin(uid);
+        if (response.success) {
+          render();
+          toast.success(response.mes);
+        } else toast.error(response.mes);
+      }
+    });
+  };
+  useEffect(() => {
+    if (editUser)
+      reset({
+        email: editUser.email,
+        firstname: editUser.firstname,
+        lastname: editUser.lastname,
+        role: editUser.role,
+        mobile: editUser.mobile,
+        status: editUser.isBlocked,
+      });
+  }, [editUser]);
+
   return (
-    <div className='w-full'>
-      <h1 className='h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b '>
-        Manage Users
-      </h1>
-      <div className='w-full p-4'>
-        <div className='flex justify-end py-4'>
-          <InputField
-            nameKey={'q'}
-            value={queries.q}
-            setValue={setQueries}
-            style={'w-80'}
-            placeholder='Search User'
-            isHideLabel={true}
-          />
-        </div>
+    <div className={clsx('w-full p-4', editUser && 'pl-[100px]')}>
+      <div className='flex justify-end '>
+        <InputField
+          nameKey={'q'}
+          value={queries.q}
+          setValue={setQueries}
+          style={'w-80'}
+          placeholder='Search User'
+          isHideLabel={true}
+        />
+      </div>
+      <form onSubmit={handleSubmit(handleUpdateUser)}>
+        {editUser && (
+          <div className='flex float-end '>
+            <Button type='submit'>Submit</Button>
+          </div>
+        )}
         <table className='table-auto mb-6 text-left w-full'>
-          <thead className='font-bold bg-gray-700 text-[13px] text-white'>
+          <thead className='font-bold bg-gray-700 text-[13px] text-white '>
             <tr className='border border-gray-500'>
               <th className='px-4 py-2'>#</th>
               <th className='px-4 py-2'>Email</th>
-              <th className='px-4 py-2'>Fullname</th>
+              <th className='px-4 py-2'>Firstname</th>
+              <th className='px-4 py-2'>Lastname</th>
               <th className='px-4 py-2'>Role</th>
-              <th className='px-4 py-2'>Phone</th>
+              <th className='px-4 py-2'>Mobile</th>
               <th className='px-4 py-2'>Status</th>
               <th className='px-4 py-2'>createdAt</th>
               <th className='px-4 py-2'>Actions</th>
@@ -58,23 +118,127 @@ const ManageUser = () => {
             {users?.users?.map((el, index) => (
               <tr key={el._id} className='border border-gray-500'>
                 <td className='py-2 px-4'>{index + 1}</td>
-                <td className='py-2 px-4'>{el.email}</td>
-                <td className='py-2 px-4'>{`${el.lastname} ${el.firstname} `}</td>
                 <td className='py-2 px-4'>
-                  {roles.find((role) => +role.code === +el.role)?.value}
+                  {editUser?._id === el._id ? (
+                    <InputForm
+                      fullWidth
+                      defaultValue={editUser?.email}
+                      register={register}
+                      errors={errors}
+                      id={'email'}
+                      validate={{
+                        required: true,
+                        pattern: {
+                          value:
+                            /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+                          message: 'Invalid email',
+                        },
+                      }}
+                    />
+                  ) : (
+                    <span>{el.email}</span>
+                  )}
                 </td>
-                <td className='py-2 px-4'>{el.mobile}</td>
                 <td className='py-2 px-4'>
-                  {el.isBlocked ? 'Blocked' : 'Active'}
+                  {editUser?._id === el._id ? (
+                    <InputForm
+                      fullWidth
+                      defaultValue={editUser?.firstname}
+                      register={register}
+                      errors={errors}
+                      id={'firstname'}
+                      validate={{
+                        required: 'Required fill',
+                      }}
+                    />
+                  ) : (
+                    <span>{el.firstname}</span>
+                  )}
                 </td>
                 <td className='py-2 px-4'>
-                  {moment(el.createAt).format('DD/MM/YYYY')}
+                  {editUser?._id === el._id ? (
+                    <InputForm
+                      fullWidth
+                      defaultValue={editUser?.lastname}
+                      register={register}
+                      errors={errors}
+                      id={'lastname'}
+                      validate={{ required: 'Required fill' }}
+                    />
+                  ) : (
+                    <span>{el.lastname}</span>
+                  )}
                 </td>
                 <td className='py-2 px-4'>
-                  <span className='px-2 text-orange-600 hover:underline cursor-pointer'>
-                    Edit
-                  </span>
-                  <span className='px-2 text-orange-600 hover:underline cursor-pointer'>
+                  {editUser?._id === el._id ? (
+                    <Select
+                      fullWidth
+                      defaultValue={el.role}
+                      register={register}
+                      errors={errors}
+                      id={'role'}
+                      validate={{ required: 'Required fill' }}
+                      options={roles}
+                    />
+                  ) : (
+                    <span>
+                      {roles.find((role) => +role.code === +el.role)?.value}
+                    </span>
+                  )}
+                </td>
+
+                <td className='py-2 px-4'>
+                  {editUser?._id === el._id ? (
+                    <InputForm
+                      fullWidth
+                      defaultValue={editUser?.mobile}
+                      register={register}
+                      errors={errors}
+                      id={'mobile'}
+                      validate={{ required: 'Required fill' }}
+                    />
+                  ) : (
+                    <span>{el.mobile}</span>
+                  )}
+                </td>
+                <td className='py-2 px-4'>
+                  {editUser?._id === el._id ? (
+                    <Select
+                      fullWidth
+                      defaultValue={el.isBlocked}
+                      register={register}
+                      errors={errors}
+                      id={'isBlocked'}
+                      validate={{ required: 'Required fill' }}
+                      options={isBlockedUser}
+                    />
+                  ) : (
+                    <span>{el.isBlocked ? 'Blocked' : 'Active'}</span>
+                  )}
+                </td>
+                <td className='py-2 px-4'>
+                  {moment(el.createdAt).format('DD/MM/YYYY')}
+                </td>
+                <td className='py-2 px-4'>
+                  {editUser?._id === el._id ? (
+                    <span
+                      onClick={() => setEditUser(null)}
+                      className='px-2 text-orange-600 hover:underline cursor-pointer'
+                    >
+                      Back
+                    </span>
+                  ) : (
+                    <span
+                      onClick={() => setEditUser(el)}
+                      className='px-2 text-orange-600 hover:underline cursor-pointer'
+                    >
+                      Edit
+                    </span>
+                  )}
+                  <span
+                    onClick={() => handleDeleteUser(el._id)}
+                    className='px-2 text-orange-600 hover:underline cursor-pointer'
+                  >
                     Delete
                   </span>
                 </td>
@@ -82,9 +246,9 @@ const ManageUser = () => {
             ))}
           </tbody>
         </table>
-        <div className='w-full flex justify-center'>
-          <Pagination totalCount={users?.counts} />
-        </div>
+      </form>
+      <div className='w-full flex justify-center'>
+        <Pagination totalCount={users?.counts} />
       </div>
     </div>
   );

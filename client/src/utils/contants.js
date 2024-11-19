@@ -224,3 +224,13 @@ export const roles = [
     value: 'User',
   },
 ];
+export const isBlockedUser = [
+  {
+    code: true,
+    value: 'Blocked',
+  },
+  {
+    code: false,
+    value: 'Active',
+  },
+];

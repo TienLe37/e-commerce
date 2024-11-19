@@ -28,3 +28,5 @@ export { default as PagiItem } from './pagination/PagiItem';
 export { default as Pagination } from './pagination/Pagination';
 export { default as Loading } from './common/Loading';
 export { default as AdminSidebar } from './sidebar/AdminSidebar';
+export { default as InputForm } from './inputs/InputForm';
+export { default as Select } from './inputs/Select';

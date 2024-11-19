@@ -272,12 +272,11 @@ const getUsers = asyncHandler(async (req, res) => {
 
 // Delete user : role : admin
 const deleteUser = asyncHandler(async (req, res) => {
-  const { _id } = req.query;
-  if (!_id) throw new Error('Vui lòng nhập đủ thông tin');
-  const response = await User.findByIdAndDelete(_id);
+  const { uid } = req.params;
+  const response = await User.findByIdAndDelete(uid);
   return res.status(200).json({
     success: response ? true : false,
-    deleteUser: response
+    mes: response
       ? `User with email: ${response.email} is deleted`
       : 'No user delete ',
   });
@@ -292,7 +291,7 @@ const updateUserByAdmin = asyncHandler(async (req, res) => {
   }).select('-password  -role -refreshToken');
   return res.status(200).json({
     success: response ? true : false,
-    upDateUser: response ? response : 'No user delete',
+    mes: response ? 'Update user success' : 'Something went wrong',
   });
 });
 // Update user by user
