@@ -95,12 +95,7 @@ const ManageUser = () => {
         />
       </div>
       <form onSubmit={handleSubmit(handleUpdateUser)}>
-        {editUser && (
-          <div className='flex float-end '>
-            <Button type='submit'>Submit</Button>
-          </div>
-        )}
-        <table className='table-auto mb-6 text-left w-full'>
+        <table className='table-auto mb-[10px] text-left w-full'>
           <thead className='font-bold bg-gray-700 text-[13px] text-white '>
             <tr className='border border-gray-500'>
               <th className='px-4 py-2'>#</th>
@@ -246,6 +241,11 @@ const ManageUser = () => {
             ))}
           </tbody>
         </table>
+        {editUser && (
+          <div className='flex float-end '>
+            <Button type='submit'>Submit</Button>
+          </div>
+        )}
       </form>
       <div className='w-full flex justify-center'>
         <Pagination totalCount={users?.counts} />
