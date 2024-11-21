@@ -1,8 +1,10 @@
 import { Button, InputForm, MarkdownEditor, Select } from 'components';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState,useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { RiDeleteBin2Fill } from 'react-icons/ri';
 import { useSelector } from 'react-redux';
-import { validate } from 'utils/helpers';
+import { toast } from 'react-toastify';
+import { getBase64, validate } from 'utils/helpers';
 
 const CreateProducts = () => {
   const {
@@ -17,11 +19,37 @@ const CreateProducts = () => {
   const [payload, setPayload] = useState({
     description: '',
   });
- 
+  const [preview, setPreview] = useState({
+    thumb: null,
+    images: []
+  })
   const [invalidFields, setInvalidFields] = useState([]);
   const changeValue = useCallback((e) => {
       setPayload(e);
   },[payload]);
+  // thumb & image
+  const handlePreviewThumb = async (file) => {
+    const base64Thumb = await getBase64(file)
+    setPreview(prev => ({...prev, thumb: base64Thumb }))
+  }
+  const handlePreviewImages = async (files) => {
+    const imagesPreview = []
+    for(let file of files) {
+      if(file.type !== 'image/png' && file.type !== 'image/jpeg'){
+        toast.warning('File image is not supported')
+        return
+      }
+      const base64 = await getBase64(file)
+      imagesPreview.push({name: file.name, path: base64 })
+    }
+    setPreview(prev => ({...prev, images: imagesPreview }))
+  }
+  useEffect(() => {
+      handlePreviewThumb(watch('thumb')[0])
+  }, [watch('thumb')])
+  useEffect(() => {
+      handlePreviewImages(watch('images'))
+   }, [watch('images')])
   
   const handleCreateProduct = (data) => {
     const invalids = validate(payload, setInvalidFields)
@@ -130,6 +158,10 @@ const CreateProducts = () => {
             />
             {errors['thumb'] && (<small className='text-xs text-red-500 '>{errors['thumb']?.message}</small>)}
           </div>
+          {preview.thumb && 
+            <div className='my-4'>
+              <img src={preview.thumb} alt='thumbnail' className='w-[200px] object-contain'/>
+            </div>}
           <div className='flex flex-col gap-2 mt-8'>
             <label className='font-semibold ' htmlFor='products' > Upload image of products</label>
             <input 
@@ -141,6 +173,12 @@ const CreateProducts = () => {
             {errors['images'] && (<small className='text-xs text-red-500 '>{errors['images']?.message}</small>)}
 
           </div>
+          {preview.images.length > 0 && 
+            <div className='my-4 flex w-full gap-3 flex-wrap'>
+              {preview.images?.map((el,index) => (
+                <img src={el.path} alt='product' className='w-[200px] min-h-[300px] object-cover'/>
+              ))}
+            </div>}
           <div className='my-4'>
           <Button type='submit'> Create new product</Button>
           </div>

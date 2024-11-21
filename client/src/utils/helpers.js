@@ -74,11 +74,12 @@ export const generateRange = (start, end) => {
 };
 
 // Convert file to base64 string
-// export const getBase64 = (file) => {
-//   return new Promise((resolve, reject) => {
-//     const reader = new FileReader();
-//     reader.readAsDataURL(file);
-//     reader.onload = () => resolve(reader.result);
-//     reader.onerror = error => reject(error);
-//   });
-// }
+export const getBase64 = (file) => {
+  if(!file) return ''
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
