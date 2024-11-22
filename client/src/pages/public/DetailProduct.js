@@ -12,7 +12,7 @@ import {
 import Slider from 'react-slick';
 import { formatMoney, formatPrice, renderStar } from 'utils/helpers';
 import { productExtraInfo } from 'utils/contants';
-
+import DOMPurify from 'dompurify';
 const settings = {
   dots: false,
   infinite: false,
@@ -77,9 +77,9 @@ const DetailProduct = () => {
       <div className='w-full flex mt-4'>
         <div className='flex flex-col gap-4 w-2/5'>
           <img
-            src={product?.images}
+            src={product?.thumb}
             alt='product'
-            className='h-[458px] w-[458px]  object-cover'
+            className='h-[458px] w-[458px]  object-contain'
           />
 
           <div className='w-458px'>
@@ -110,11 +110,14 @@ const DetailProduct = () => {
             <span className='text-sm text-main italic'>{` (Sold : ${product?.sold} )`}</span>
           </div>
           <ul className=' list-square text-sm text-gray-500  pl-4'>
-            {product?.description?.map((el, index) => (
+            {product?.description?.length > 1 && product?.description?.map((el, index) => (
               <li className='leading-6' key={index}>
                 {el}
               </li>
             ))}
+            {product?.description?.length === 1 &&
+              <div className='text-gray-500 text-sm' dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(product?.description[0])}}></div>
+            }
           </ul>
           <div className='flex flex-col gap-4 '>
             <div className='flex items-center'>

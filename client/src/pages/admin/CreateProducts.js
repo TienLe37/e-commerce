@@ -1,12 +1,16 @@
-import { Button, InputForm, MarkdownEditor, Select } from 'components';
+import { apiCreateProduct } from 'apis';
+import { Button, InputForm, Loading, MarkdownEditor, Select } from 'components';
 import React, { useCallback, useState,useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { RiDeleteBin2Fill } from 'react-icons/ri';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { showModal } from 'store/app/appSlice';
 import { getBase64, validate } from 'utils/helpers';
 
 const CreateProducts = () => {
+  const dispatch = useDispatch()
+  const { isShowModal, modalChildren } = useSelector((state) => state.app);
   const {
     register,
     formState: { errors },
@@ -51,14 +55,29 @@ const CreateProducts = () => {
       handlePreviewImages(watch('images'))
    }, [watch('images')])
   
-  const handleCreateProduct = (data) => {
+  const handleCreateProduct = async (data) => {
     const invalids = validate(payload, setInvalidFields)
     if(invalids === 0) {
       if (data.category) data.category = categories?.find((el) => el._id === data.category)?.title;
       const finalPayload = { ...data, ...payload }
-      console.log(finalPayload);
       const formData = new FormData()
       for(let i of Object.entries(finalPayload)) formData.append(i[0],i[1])
+      if(finalPayload.thumb) formData.append('thumb', finalPayload.thumb[0])
+      if(finalPayload.images) {
+        for(let image of finalPayload.images) 
+          formData.append('images', image)
+      }
+      dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }))
+      const response = await apiCreateProduct(formData)
+      if(response.success) {
+        dispatch(showModal({ isShowModal: false, modalChildren: null }))
+        toast.success(response.mes) 
+        reset()
+        setPayload({
+          thumb: '',
+          images: []
+        })
+      } else toast.error(response.mes)
     }
   };
   return (

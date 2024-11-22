@@ -57,10 +57,7 @@ const SearchItem = ({
       search: createSearchParams(queries).toString(),
     });
   }, [debouncePriceFrom, debouncePriceTo]);
-  useEffect(() => {
-    if (price.from && price.to && price.from > price.to)
-      return alert('Price from cannot greater than price to');
-  }, [price]);
+
 
   return (
     <div

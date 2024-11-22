@@ -36,7 +36,7 @@ function Product({ productData, isNew, normal }) {
           <img
             src={productData?.thumb || cmsoon}
             alt=''
-            className='w[243px] h[243px] object-cover '
+            className='min-w-[243px] max-h-[243px] object-contain'
           />
           {!normal && (
             <img
