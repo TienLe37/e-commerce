@@ -2,7 +2,6 @@ import { apiCreateProduct } from 'apis';
 import { Button, InputForm, Loading, MarkdownEditor, Select } from 'components';
 import React, { useCallback, useState,useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { RiDeleteBin2Fill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { showModal } from 'store/app/appSlice';
@@ -10,7 +9,6 @@ import { getBase64, validate } from 'utils/helpers';
 
 const CreateProducts = () => {
   const dispatch = useDispatch()
-  const { isShowModal, modalChildren } = useSelector((state) => state.app);
   const {
     register,
     formState: { errors },
@@ -69,8 +67,8 @@ const CreateProducts = () => {
       }
       dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }))
       const response = await apiCreateProduct(formData)
+      dispatch(showModal({ isShowModal: false, modalChildren: null }))
       if(response.success) {
-        dispatch(showModal({ isShowModal: false, modalChildren: null }))
         toast.success(response.mes) 
         reset()
         setPayload({
@@ -78,11 +76,12 @@ const CreateProducts = () => {
           images: []
         })
       } else toast.error(response.mes)
+      
     }
   };
   return (
     <div className='w-full'>
-      <h1 className='h-[80px] flex justify-between items-center text-3xl'>
+      <h1 className='h-[80px] flex justify-between items-center pl-[10px] text-2xl font-semibold'>
         <span>Create new products</span>
       </h1>
       <div className='p-4'>
@@ -199,7 +198,7 @@ const CreateProducts = () => {
               ))}
             </div>}
           <div className='my-4'>
-          <Button type='submit'> Create new product</Button>
+          <Button type='submit'> Submit</Button>
           </div>
         </form>
       </div>

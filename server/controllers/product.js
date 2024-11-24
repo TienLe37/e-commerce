@@ -64,9 +64,21 @@ const getProducts = asyncHandler(async (req, res) => {
     }));
     colorQueriesObject = { $or: colorQueries };
   }
-  const q = { ...colorQueriesObject, ...formatedQueries };
+  let queryObject = {}
+  if(queries?.q) {
+    delete formatedQueries.q
+    queryObject = {
+      $or: [
+      {color: { $regex: queries.q, $options: 'i' }},
+      {title: { $regex: queries.q, $options: 'i' }},
+      {category: { $regex: queries.q, $options: 'i' }},
+      { brand: { $regex: queries.q, $options: 'i' }},
+      ]
+    }
+  }
+  const finalQuery = { ...colorQueriesObject, ...formatedQueries, ...queryObject };
   // tạo promise dạng pending(không có await) để khi tìm kiếm sẽ chờ người dùng nhập thêm thông tin tìm kiếm
-  let queryCommand = Product.find(q);
+  let queryCommand = Product.find(finalQuery);
 
   //Sort
   if (req.query.sort) {
@@ -90,7 +102,7 @@ const getProducts = asyncHandler(async (req, res) => {
   // thực thi hàm queryCommand
   queryCommand
     .then(async (response) => {
-      const counts = await Product.find(q).countDocuments(); // counts: số lượng sản phẩm thỏa mãn điều kiện
+      const counts = await Product.find(finalQuery).countDocuments(); // counts: số lượng sản phẩm thỏa mãn điều kiện
       return res.status(200).json({
         success: counts >= 0 ? true : false,
         counts,
@@ -102,13 +114,15 @@ const getProducts = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
+  if(req?.files?.thumb) req.body.thumb = req?.files?.thumb[0]?.path
+  if(req?.files?.images) req.body.images = req.files?.images?.map(el => el.path )
   if (req.body && req.body.title) req.body.slug = slugify(req.body.title);
   const updatedProduct = await Product.findByIdAndUpdate(pid, req.body, {
     new: true,
   });
   return res.status(200).json({
     success: updatedProduct ? true : false,
-    updatedProduct: updatedProduct ? updatedProduct : 'Cannot update product',
+    mes: updatedProduct ? 'Update product success' : 'Cannot update product',
   });
 });
 const deleteProduct = asyncHandler(async (req, res) => {
@@ -116,8 +130,8 @@ const deleteProduct = asyncHandler(async (req, res) => {
   const deletedProduct = await Product.findByIdAndDelete(pid);
   return res.status(200).json({
     success: deletedProduct ? true : false,
-    deletedProduct: deletedProduct
-      ? deletedProduct
+    mes: deletedProduct
+      ? 'Deleted'
       : 'Not found product to delete',
   });
 });
