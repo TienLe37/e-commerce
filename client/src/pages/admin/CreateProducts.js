@@ -177,9 +177,9 @@ const CreateProducts = () => {
             {errors['thumb'] && (<small className='text-xs text-red-500 '>{errors['thumb']?.message}</small>)}
           </div>
           {preview.thumb && 
-            <div className='my-4'>
-              <img src={preview.thumb} alt='thumbnail' className='w-[200px] object-contain'/>
-            </div>}
+          <div className='my-4'>
+            <img src={preview.thumb} alt='thumbnail' className='w-[200px] object-contain'/>
+          </div>}
           <div className='flex flex-col gap-2 mt-8'>
             <label className='font-semibold ' htmlFor='products' > Upload image of products</label>
             <input 
@@ -192,14 +192,14 @@ const CreateProducts = () => {
 
           </div>
           {preview.images.length > 0 && 
-            <div className='my-4 flex w-full gap-3 flex-wrap'>
-              {preview.images?.map((el,index) => (
-                <img src={el.path} alt='product' className='w-[200px] min-h-[300px] object-cover'/>
-              ))}
-            </div>}
+          <div className='my-4 flex w-full gap-3 flex-wrap'>
+            {preview.images?.map((el,index) => (
+              <img src={el.path} alt='product' className='w-[200px] min-h-[300px] object-cover'/>
+            ))}
+          </div>}
           <div className='my-4'>
           <Button type='submit'> Submit</Button>
-          </div>
+          </div>  
         </form>
       </div>
     </div>

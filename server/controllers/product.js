@@ -1,7 +1,7 @@
 const Product = require('../models/product');
 const asyncHandler = require('express-async-handler');
 const slugify = require('slugify');
-
+const makeSKU = require('uniqid')
 const createProduct = asyncHandler(async (req, res) => {
   const {title, price,description, brand, category, color } = req.body
   if(!(title && price &&description && category && color)) throw new Error('Missing inputs');
@@ -197,8 +197,25 @@ const uploadImageProduct = asyncHandler(async (req, res) => {
     { new: true }
   );
   return res.status(200).json({
-    status: response ? true : false,
-    updateProduct: response ? response : 'Cannot upload images',
+    success: response ? true : false,
+    mes: response ? response : 'Cannot upload images',
+  });
+});
+
+const addVarriant = asyncHandler(async (req, res) => {
+  const { pid } = req.params;
+  const {title, price, color } = req.body
+  const thumb = req?.files?.thumb[0]?.path
+  const images = req.files?.images?.map(el => el.path )
+  if (!(title && price && color)) throw new Error('Missing images');
+  const response = await Product.findByIdAndUpdate(
+    pid,
+    { $push: { varriants:{title, price, color,thumb,images, sku: makeSKU().toUpperCase() }}},
+    { new: true }
+  );
+  return res.status(200).json({
+    success: response ? true : false,
+    mes: response ? 'Add Varriant success' : 'Cannot add varriant product',
   });
 });
 module.exports = {
@@ -209,4 +226,5 @@ module.exports = {
   deleteProduct,
   ratings,
   uploadImageProduct,
+  addVarriant
 };

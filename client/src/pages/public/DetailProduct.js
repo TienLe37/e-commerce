@@ -13,6 +13,7 @@ import Slider from 'react-slick';
 import { formatMoney, formatPrice, renderStar } from 'utils/helpers';
 import { productExtraInfo } from 'utils/contants';
 import DOMPurify from 'dompurify';
+import clsx from 'clsx';
 const settings = {
   dots: false,
   infinite: false,
@@ -25,6 +26,14 @@ const DetailProduct = () => {
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [varriantId, setVarriantId] = useState(null)
+  const [varriantProduct, setVarriantProduct] = useState({
+    title: '',
+    price: '',
+    color: '',
+    thumb: '',
+    images: [],
+  })
   const fetchProductData = async () => {
     const response = await apiGetProduct(pid);
     if (response.success) setProduct(response.productData);
@@ -40,6 +49,25 @@ const DetailProduct = () => {
     }
     window.scrollTo(0, 0);
   }, [pid]);
+  useEffect(() => {
+    if(varriantId  ) {
+      setVarriantProduct({
+        title : product?.varriants?.find(el => el.sku === varriantId)?.title,
+        color : product?.varriants?.find(el => el.sku === varriantId)?.color,
+        price : product?.varriants?.find(el => el.sku === varriantId)?.price,
+        images : product?.varriants?.find(el => el.sku === varriantId)?.images,
+        thumb : product?.varriants?.find(el => el.sku === varriantId)?.thumb,
+      })
+    } else {
+      setVarriantProduct({
+        title: '',
+        price: '',
+        color: '',
+        thumb: '',
+        images: [],
+      })
+    }
+  }, [varriantId])
   // Rerender trang detail product và update ratings ngay sau khi Submit Vote& Review
   const [update, setUpdate] = useState(false);
   const reRenderAfterVote = useCallback(() => {
@@ -71,20 +99,29 @@ const DetailProduct = () => {
   return (
     <div className='w-main'>
       <div className='w-full bg-gray-100 mt-[-24px] py-[15px] px-[5px]'>
-        <h3 className='pb-2 font-semibold '>{title}</h3>
-        <Breadcrumb title={title} category={product?.category} />
+        <h3 className='pb-2 font-semibold '>{varriantProduct?.title || product?.title}</h3>
+        <Breadcrumb title={varriantProduct?.title || product?.title} category={product?.category} />
       </div>
       <div className='w-full flex mt-4'>
         <div className='flex flex-col gap-4 w-2/5'>
           <img
-            src={product?.thumb}
+            src={varriantProduct?.thumb || product?.thumb}
             alt='product'
             className='h-[458px] w-[458px]  object-contain'
           />
 
           <div className='w-458px'>
             <Slider {...settings} className='image-slider'>
-              {product?.images?.map((el, index) => (
+              {varriantProduct?.images.length === 0 && product?.images?.map((el, index) => (
+                <div key={index} className='px-2'>
+                  <img
+                    src={el}
+                    alt='sub-img'
+                    className='h-[143px] w-[143px] border object-contain'
+                  ></img>
+                </div>
+              ))}
+              { varriantProduct?.images.length > 0 && varriantProduct?.images?.map((el, index) => (
                 <div key={index} className='px-2'>
                   <img
                     src={el}
@@ -99,7 +136,7 @@ const DetailProduct = () => {
         <div className='w-2/5 px-[30px] flex flex-col gap-4'>
           <div className='flex items-center justify-between'>
             <h2 className='text-[30px] font-semibold '>{`${formatMoney(
-              formatPrice(product?.price)
+              formatPrice(varriantProduct?.price || product?.price)
             )} VNĐ`}</h2>
             <span className='text-sm text-main'>{`In Stock: ${product?.quantity}`}</span>
           </div>
@@ -119,6 +156,24 @@ const DetailProduct = () => {
               <div className='text-gray-500 text-sm' dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(product?.description[0])}}></div>
             }
           </ul>
+          <div className='my-4 flex gap-4'>
+              <span className='text-sm mr-3'>Color:</span>
+              <div className='flex flex-wrap gap-4 items-center w-full'>
+                  <div onClick={() => setVarriantId(null)}
+                    className={clsx('flex items-center gap-2 p-2 border cursor-pointer', !varriantId && 'border-red-600')}
+                    >
+                    <img src={product?.thumb} alt='thumb' className='w-8 h-8 rounded-md object-cover'/>
+                    <span>{product?.color}</span>
+                  </div>
+                  {product?.varriants?.map(el => (
+                      <div onClick={() => setVarriantId(el.sku)}
+                      className={clsx('flex items-center gap-2 p-2 border cursor-pointer', varriantId === el.sku && 'border-red-600')}>
+                      <img src={el.thumb} alt='thumb' className='w-8 h-8 rounded-md object-cover'/>
+                      <span>{el.color}</span>
+                    </div>
+                  ))}
+              </div>
+          </div>
           <div className='flex flex-col gap-4 '>
             <div className='flex items-center'>
               <h4 className=' text-sm mr-3'> Quantity</h4>

@@ -5,11 +5,13 @@ import useDebounce from 'hooks/useDebounce';
 import moment from 'moment';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { BiEdit } from 'react-icons/bi';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { isBlockedUser, roles } from 'utils/contants';
-
+import { IoReturnUpBackOutline } from "react-icons/io5";
 const ManageUser = () => {
   const {
     handleSubmit,
@@ -214,28 +216,25 @@ const ManageUser = () => {
                 <td className='py-2 px-4'>
                   {moment(el.createdAt).format('DD/MM/YYYY')}
                 </td>
-                <td className='py-2 px-4'>
+                <td className='py-2  text-center'>
                   {editUser?._id === el._id ? (
                     <span
                       onClick={() => setEditUser(null)}
-                      className='px-2 text-orange-600 hover:underline cursor-pointer'
-                    >
-                      Back
+                    className='px-2 hover:text-orange-600 hover:underline cursor-pointer inline-block text-blue-500 '>
+                    <IoReturnUpBackOutline size={20}/>
                     </span>
                   ) : (
                     <span
-                      onClick={() => setEditUser(el)}
-                      className='px-2 text-orange-600 hover:underline cursor-pointer'
-                    >
-                      Edit
+                    onClick={() => setEditUser(el)}  
+                    className='px-2 hover:text-orange-600 hover:underline cursor-pointer inline-block text-blue-500 '>
+                        <BiEdit size={18}/>
                     </span>
                   )}
-                  <span
-                    onClick={() => handleDeleteUser(el._id)}
-                    className='px-2 text-orange-600 hover:underline cursor-pointer'
-                  >
-                    Delete
-                  </span>
+                  <span  
+                    onClick={() => handleDeleteUser(el._id)}  
+                    className='px-2 hover:text-orange-600 hover:underline cursor-pointer inline-block text-blue-500 '>
+                        <RiDeleteBin6Line size={18}/>
+                    </span>
                 </td>
               </tr>
             ))}

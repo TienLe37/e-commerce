@@ -1,6 +1,6 @@
 import { apiDeleteProduct, apiGetProducts } from 'apis';
 import clsx from 'clsx';
-import { InputForm, Pagination } from 'components';
+import { CustomizeVarriant, InputForm, Pagination } from 'components';
 import useDebounce from 'hooks/useDebounce';
 import moment from 'moment';
 import React, { useState , useEffect, useCallback } from 'react';
@@ -9,6 +9,8 @@ import { createSearchParams, useLocation, useNavigate, useSearchParams } from 'r
 import UpdateProduct from './UpdateProduct';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
+import { BiCustomize, BiEdit } from 'react-icons/bi';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 
 const ManageProducts = () => {
   const {
@@ -23,8 +25,10 @@ const ManageProducts = () => {
   const [products, setProducts] = useState(null);
   const [editProduct, setEditProduct] = useState(null)
   const [update, setUpdate] = useState(false)
+  const [customizeVarriant , setCustomizeVarriant ] = useState(null)
   const navigate = useNavigate()
   const location = useLocation()
+
   const render = useCallback(() => {
     setUpdate(!update)
   },[update])
@@ -68,9 +72,12 @@ const ManageProducts = () => {
     });
   }
   return (
-    <div className={clsx('w-full pr-[5px]  text-[12px] relative')}>
+    <div className={clsx('w-full pr-[5px] pl-[3px] text-[12px] relative')}>
       {editProduct && <div className='absolute inset-0 min-h-screen bg-white '>
         <UpdateProduct editProduct={editProduct} render={render} setEditProduct={setEditProduct}/>
+      </div>}
+      {customizeVarriant && <div className='absolute inset-0 min-h-screen bg-gray-100 '>
+        <CustomizeVarriant customizeVarriant={customizeVarriant} render={render} setCustomizeVarriant={setCustomizeVarriant}/>
       </div>}
       <div className='w-full flex justify-end items-center'>
         <form className='w-[30%]' >
@@ -118,17 +125,22 @@ const ManageProducts = () => {
                 <td className='py-2 px-4'>
                   {moment(el.createdAt).format('DD/MM/YYYY')}
                 </td>
-                <td className='py-2 px-4'>
-                <span
-                onClick={() => setEditProduct(el)}  
-                className='px-2 text-orange-600 hover:underline cursor-pointer'>
-                    Edit
-                </span>
-                <span  
-                onClick={() => handleDeleteProduct(el._id)}  
-                className='px-2 text-orange-600 hover:underline cursor-pointer'>
-                    Delete
-                </span>
+                <td className='py-2 '>
+                    <span
+                    onClick={() => setEditProduct(el)}  
+                    className='px-2 hover:text-orange-600 hover:underline cursor-pointer inline-block text-blue-500 '>
+                        <BiEdit size={18}/>
+                    </span>
+                    <span  
+                    onClick={() => handleDeleteProduct(el._id)}  
+                    className='px-2 hover:text-orange-600 hover:underline cursor-pointer inline-block text-blue-500 '>
+                        <RiDeleteBin6Line size={18}/>
+                    </span>
+                    <span
+                    onClick={() => setCustomizeVarriant(el)}  
+                    className='px-2 hover:text-orange-600 hover:underline cursor-pointer inline-block text-blue-500 '>
+                        <BiCustomize size={18}/>
+                    </span>
                 </td>
                 
               </tr>
