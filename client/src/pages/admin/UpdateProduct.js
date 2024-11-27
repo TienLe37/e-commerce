@@ -79,6 +79,7 @@ const UpdateProduct = ({ editProduct, render , setEditProduct }) => {
       finalPayload.images = data?.images?.length === 0 ? preview.images : data.images
       for (let image of finalPayload.images) formData.append('images', image);
       dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }));
+      window.scrollTo(0, 0);
       const response = await apiUpdateProduct(formData, editProduct._id);
       dispatch(showModal({ isShowModal: false, modalChildren: null }));
       if (response.success) {

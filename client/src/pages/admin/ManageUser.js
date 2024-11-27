@@ -128,7 +128,7 @@ const ManageUser = () => {
                         pattern: {
                           value:
                             /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-                          message: 'Invalid email',
+                            message: 'Invalid email',
                         },
                       }}
                     />

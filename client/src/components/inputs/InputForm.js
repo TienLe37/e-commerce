@@ -17,7 +17,7 @@ const InputForm = ({
 }) => {
   return (
     <div className={clsx('flex flex-col h-[70px] gap-2', style)}>
-      {label && <label htmlFor={id}>{label}</label>}
+      {label && <label className='font-medium' htmlFor={id}>{label + ':'}</label>}
       <input
         type={type}
         id={id}

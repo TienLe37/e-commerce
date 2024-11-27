@@ -4,7 +4,9 @@ import { RiBillLine, RiTruckFill } from 'react-icons/ri';
 import { AiFillGift, AiOutlineDashboard } from 'react-icons/ai';
 import { TbBrandProducthunt } from 'react-icons/tb';
 import { FaTty } from 'react-icons/fa';
-import { MdGroups } from 'react-icons/md';
+import { MdGroups, MdWorkHistory } from 'react-icons/md';
+import { FaCartShopping, FaHeartCirclePlus } from "react-icons/fa6";
+import { IoMdPerson } from 'react-icons/io';
 export const navigation = [
   {
     id: 1,
@@ -213,7 +215,38 @@ export const adminSidebar = [
     icon: <RiBillLine size={30} />,
   },
 ];
-
+// member
+export const memberSidebar = [
+  {
+    id: 1,
+    type: 'SINGLE',
+    text: 'Personal',
+    path: `/${path.MEMBER}/${path.PERSONAL}`,
+    icon: <IoMdPerson size={30} />,
+  },
+  {
+    id: 2,
+    type: 'SINGLE',
+    text: 'My Cart',
+    path: `/${path.MEMBER}/${path.MY_CART}`,
+    icon: <FaCartShopping size={30} />,
+  },
+  
+  {
+    id: 3,
+    type: 'SINGLE',
+    text: 'Buy history',
+    path: `/${path.MEMBER}/${path.HISTORY}`,
+    icon: <MdWorkHistory size={30} />,
+  },
+  {
+    id: 4,
+    type: 'SINGLE',
+    text: 'Wishlist',
+    path: `/${path.MEMBER}/${path.WISHLIST}`,
+    icon: <FaHeartCirclePlus size={30} />,
+  },
+];
 export const roles = [
   {
     code: 1945,
