@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 
 const SelectQuantity = ({ quantity, handleQuantity, handleChangeQuantity }) => {
   return (
-    <div className='bg-[#eaf0f7] '>
+    <div className=' '>
       <span
         onClick={() => handleChangeQuantity('-')}
         className='p-2 cursor-pointer  border-r border-black  '

@@ -25,7 +25,7 @@ const Products = () => {
   const [activeClick, setActiveClick] = useState(null);
   const [sort, setSort] = useState('');
   const fetchProductsbyCategory = async (queries) => {
-    const response = await apiGetProducts(queries);
+    const response = await apiGetProducts({category,...queries});
     if (response.success) setProducts(response);
   };
 

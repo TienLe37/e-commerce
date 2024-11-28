@@ -9,6 +9,7 @@ const sendMail = require('../ultils/sendMail');
 const crypto = require('crypto');
 const makeToken = require('uniqid');
 const { users } = require('../ultils/constants');
+const path = require('path');
 
 //------------------------------------------------------------------------------------------------------------------
 // Đăng ký : Active đăng kí qua email
@@ -107,7 +108,13 @@ const login = asyncHandler(async (req, res) => {
 // Get User current
 const getCurrent = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const user = await User.findById(_id).select('-refreshToken -password');
+  const user = await User.findById(_id).select('-refreshToken -password').populate({
+    path: 'cart',
+    populate: {
+      path: 'product',
+      select: 'title thumb price'
+    }
+  });
   return res.status(200).json({
     success: user ? true : false,
     rs: user ? user : 'Không tìm thấy User',
@@ -328,50 +335,49 @@ const updateUserAddress = asyncHandler(async (req, res) => {
 // Thêm sản phẩm vào giỏ hàng
 const addToCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { pid, quantity, color } = req.body;
-  if (!pid || !quantity || !color)
+  const { pid, quantity = 1, color } = req.body;
+  if (!pid || !color)
     throw new Error('Vui lòng nhập đủ thông tin');
   const user = await User.findById(_id).select('cart');
   // Tìm trong giỏ hàng xem có product chưa
-  const alreadyProduct = user?.cart?.find(
-    (el) => el.product.toString() === pid
-  );
+  const alreadyProduct = user?.cart?.find((el) => el.product.toString() === pid);
   if (alreadyProduct) {
     // nếu đã có product
-    if (alreadyProduct.color === color) {
       const response = await User.updateOne(
         { cart: { $elemMatch: alreadyProduct } },
-        { $set: { 'cart.$.quantity': alreadyProduct.quantity + +quantity } },
+        { $set: { 'cart.$.quantity': quantity , 'cart.$.color': color } },
         { new: true }
       );
       return res.status(200).json({
         success: response ? true : false,
-        updateUser: response ? response : 'Something went wrong ',
+        mes: response ? 'Added to Cart ' : 'Something went wrong ',
       });
-    } else {
-      const response = await User.findByIdAndUpdate(
-        _id,
-        { $push: { cart: { product: pid, quantity, color } } },
-        { new: true }
-      );
-      return res.status(200).json({
-        success: response ? true : false,
-        updateUser: response ? response : 'Something went wrong ',
-      });
-    }
   } else {
-    const response = await User.findByIdAndUpdate(
-      _id,
-      { $push: { cart: { product: pid, quantity, color } } },
-      { new: true }
-    );
+    const response = await User.findByIdAndUpdate(_id, { $push: { cart: { product: pid, quantity, color } } }, { new: true });
     return res.status(200).json({
       success: response ? true : false,
-      updateUser: response ? response : 'Something went wrong ',
+      mes: response ? 'Added to Cart ' : 'Something went wrong ',
     });
   }
 });
-
+// remove product from cart
+const removeProductfromCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user
+  const { pid } = req.params
+  const user = await User.findById(_id).select('cart')
+  const alreadyProduct = user?.cart?.find((el) => el.product.toString() === pid);
+  if(!alreadyProduct) {
+    return res.status(200).json({
+      success: true,
+      mes: 'Removed product.'
+    });
+  }
+  const response = await User.findByIdAndUpdate(_id, { $pull: { cart: { product: pid} } }, { new: true });
+  return res.status(200).json({
+    success: response ? true : false,
+    mes: response ? 'Removed product from cart ' : 'Something went wrong ',
+  });
+});
 /// mock User
 const createUsers = asyncHandler(async (req, res) => {
   const response = await User.create(users);
@@ -396,4 +402,5 @@ module.exports = {
   addToCart,
   finalRegister,
   createUsers,
+  removeProductfromCart
 };

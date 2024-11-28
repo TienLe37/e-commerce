@@ -6,6 +6,7 @@ import { logout } from 'store/user/userSlice';
 import logo from 'assets/logo.png';
 import { Link } from 'react-router-dom';
 import path from 'utils/path';
+import { showCart } from 'store/app/appSlice';
 const { RiPhoneFill, MdEmail, BsHandbagFill, FaUserCircle } = icons;
 const Header = () => {
   const { current } = useSelector((state) => state.user);
@@ -45,9 +46,11 @@ const Header = () => {
 
         {current && (
           <Fragment>
-            <div className='flex items-center justify-center cursor-pointer gap-2 px-4 border-r'>
+            <div 
+            onClick={() => dispatch(showCart())}
+            className='flex items-center justify-center cursor-pointer gap-2 px-4 border-r'>
               <BsHandbagFill color='red' size={16} />
-              <span className='text-[16px]'>0 item(s)</span>
+              <span className='text-[16px]'>{`${current?.cart?.length || 0} items`}</span>
             </div>
             <div
               onClick={e => {

@@ -5,17 +5,48 @@ import newLabel from 'assets/newLabel.png';
 import { formatMoney, renderStar } from 'utils/helpers';
 import icons from 'utils/icons';
 import { SelectOption } from 'components';
-import { Link } from 'react-router-dom';
-const { BsFillSuitHeartFill, AiFillEye, AiOutlineMenu } = icons;
-function Product({ productData, isNew, normal }) {
+import { Link, useNavigate } from 'react-router-dom';
+import { BiSolidCartAdd } from 'react-icons/bi';
+import { useSelector } from 'react-redux';
+import { apiUpdateCart } from 'apis';
+import { toast } from 'react-toastify';
+import withBaseComponent from 'hocs/withBaseComponent';
+import { getCurrent } from 'store/user/asyncActions';
+import Swal from 'sweetalert2';
+import path from 'utils/path';
+import { BsFillCartCheckFill } from 'react-icons/bs';
+const { BsFillSuitHeartFill } = icons;
+function Product({ productData, isNew, normal , navigate , dispatch }) {
   const [isShowOption, setisShowOption] = useState(false);
+  const { current } = useSelector((state) => state.user);
+
+  const handleAddWishlist = async (e , flag) => {
+    e.stopPropagation()
+    if(flag === 'WISHLIST') console.log('wishlist');
+    if(flag === 'CART') {
+        if(!current) {
+          return Swal.fire({
+            title: 'Almost...',
+            text: 'Please login first! ?',
+            showCancelButton: true,
+            cancelButtonText: 'Not now!',  
+            confirmButtonText: 'Go Login'
+          }).then(async (rs) => {
+            if(rs.isConfirmed) navigate(`/${path.LOGIN}`)
+          })
+        }
+        const response = await apiUpdateCart({pid: productData._id , color: productData.color})
+        if(response.success) {
+          toast.success(response.mes)
+          dispatch(getCurrent())
+        }
+    }
+  }
   return (
     <div className='w-full text-base px-[10px]'>
-      <Link
-        to={`/${productData?.category?.toLowerCase()}/${productData?._id}/${
-          productData?.title
-        }`}
-        className='w-full border p-[15px] flex flex-col items-center '
+      <div
+        onClick={e => navigate(`/${productData?.category?.toLowerCase()}/${productData?._id}/${productData?.title}`)}
+        className='w-full border p-[15px] flex flex-col items-center cursor-pointer'
         onMouseEnter={(e) => {
           e.stopPropagation();
           setisShowOption(true);
@@ -27,10 +58,13 @@ function Product({ productData, isNew, normal }) {
       >
         <div className=' w-full relative'>
           {isShowOption && (
-            <div className=' absolute bottom-0 left-0 right-0 flex justify-center gap-2 animate-slide-top '>
-              <SelectOption icons={<AiFillEye />} />
-              <SelectOption icons={<AiOutlineMenu />} />
-              <SelectOption icons={<BsFillSuitHeartFill />} />
+            <div 
+            className=' absolute bottom-0 left-0 right-0 flex justify-center gap-4 animate-slide-top '>
+              <span title='Add to wishlist' onClick={ (e) => handleAddWishlist(e, 'WISHLIST')}><SelectOption icons={<BsFillSuitHeartFill size={20} />} /> </span>
+              {current?.cart?.some(el => el.product._id === productData._id) 
+              ? <span title='Added to cart' ><SelectOption icons={<BsFillCartCheckFill size={25} color='green' />} /> </span>
+              : <span title='Add to cart' onClick={ (e) => handleAddWishlist(e, 'CART')}><SelectOption icons={<BiSolidCartAdd size={30} />} /> </span>
+              }
             </div>
           )}
           <img
@@ -55,9 +89,9 @@ function Product({ productData, isNew, normal }) {
           <span className='line-clamp-1'>{productData?.title}</span>
           <span>{`${formatMoney(productData.price)} VNĐ`}</span>
         </div>
-      </Link>
+      </div>
     </div>
   );
 }
 
-export default memo(Product);
+export default withBaseComponent(memo(Product));
