@@ -128,8 +128,8 @@ const Personal = () => {
                 className='w-20 h-20 object-cover rounded-full'
                 ></img>
               </label> */}
-            <label className='font-semibold ' htmlFor='avatar'>
-              Upload Avatar
+            <label className='font-medium ' htmlFor='avatar'>
+              Upload Avatar:
             </label>
             <input type='file' id='avatar' {...register('avatar')} />
             </div>
