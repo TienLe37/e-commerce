@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { createSearchParams, useParams } from 'react-router-dom';
 import { apiGetProduct, apiGetProducts } from 'apis/product';
 import {
   Breadcrumb,
@@ -14,6 +14,13 @@ import { formatMoney, formatPrice, renderStar } from 'utils/helpers';
 import { productExtraInfo } from 'utils/contants';
 import DOMPurify from 'dompurify';
 import clsx from 'clsx';
+import { apiUpdateCart } from 'apis';
+import path from 'utils/path';
+import { useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
+import withBaseComponent from 'hocs/withBaseComponent';
+import { getCurrent } from 'store/user/asyncActions';
 const settings = {
   dots: false,
   infinite: false,
@@ -21,8 +28,9 @@ const settings = {
   slidesToShow: 3,
   slidesToScroll: 1,
 };
-const DetailProduct = () => {
-  const { pid, title, category } = useParams();
+const DetailProduct = ({navigate , dispatch, location}) => {
+  const { current } = useSelector((state) => state.user);
+  const { pid, category } = useParams();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState(null);
   const [quantity, setQuantity] = useState(1);
@@ -50,7 +58,7 @@ const DetailProduct = () => {
     window.scrollTo(0, 0);
   }, [pid]);
   useEffect(() => {
-    if(varriantId  ) {
+    if(varriantId ) {
       setVarriantProduct({
         title : product?.varriants?.find(el => el.sku === varriantId)?.title,
         color : product?.varriants?.find(el => el.sku === varriantId)?.color,
@@ -60,11 +68,11 @@ const DetailProduct = () => {
       })
     } else {
       setVarriantProduct({
-        title: '',
-        price: '',
-        color: '',
-        thumb: '',
-        images: [],
+        title: product?.title,
+        price: product?.price,
+        color: product?.color,
+        thumb: product?.thumb,
+        images: product?.images || [],
       })
     }
   }, [varriantId])
@@ -96,6 +104,34 @@ const DetailProduct = () => {
     },
     [quantity]
   );
+  const handleAddToCart = async() => {
+    if(!current) {
+      return Swal.fire({
+        title: 'Almost...',
+        text: 'Please login first! ?',
+        showCancelButton: true,
+        cancelButtonText: 'Not now!',  
+        confirmButtonText: 'Go Login'
+      }).then(async (rs) => {
+        if(rs.isConfirmed) navigate({
+          pathname: `/${path.LOGIN}`,
+          search: createSearchParams({redirect: location.pathname}).toString()
+        })
+      })
+    }
+    const response = await apiUpdateCart({pid, 
+      color: varriantProduct?.color || product?.color , 
+      quantity , 
+      price: varriantProduct?.price || product?.price ,
+      thumb: varriantProduct?.thumb || product?.thumb ,
+      title: varriantProduct?.title || product?.title,
+    })
+    if(response.success) {
+      toast.success(response.mes)
+      dispatch(getCurrent())
+    } else toast.error(response.mes)
+  }
+  
   return (
     <div className='w-main'>
       <div className='w-full bg-gray-100 mt-[-24px] py-[15px] px-[5px]'>
@@ -112,7 +148,7 @@ const DetailProduct = () => {
 
           <div className='w-458px'>
             <Slider {...settings} className='image-slider'>
-              {varriantProduct?.images.length === 0 && product?.images?.map((el, index) => (
+              {varriantProduct?.images?.length === 0 && product?.images?.map((el, index) => (
                 <div key={index} className='px-2'>
                   <img
                     src={el}
@@ -166,7 +202,8 @@ const DetailProduct = () => {
                     <span>{product?.color}</span>
                   </div>
                   {product?.varriants?.map(el => (
-                      <div onClick={() => setVarriantId(el.sku)}
+                      <div key={el.sku}
+                       onClick={() => setVarriantId(el.sku)}
                       className={clsx('flex items-center gap-2 p-2 border cursor-pointer', varriantId === el.sku && 'border-red-600')}>
                       <img src={el.thumb} alt='thumb' className='w-8 h-8 rounded-md object-cover'/>
                       <span>{el.color}</span>
@@ -183,7 +220,10 @@ const DetailProduct = () => {
                 handleChangeQuantity={handleChangeQuantity}
               />
             </div>
-            <Button fw>ADD TO CART</Button>
+            <Button 
+             handleOnClick={handleAddToCart}
+             fw
+             >ADD TO CART</Button>
           </div>
         </div>
         <div className='w-1/5'>
@@ -217,4 +257,4 @@ const DetailProduct = () => {
   );
 };
 
-export default DetailProduct;
+export default withBaseComponent(DetailProduct);

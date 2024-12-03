@@ -7,6 +7,7 @@ export { default as Cart } from './products/Cart';
 export { default as Product } from './products/Product';
 export { default as SelectOption } from './search/SelectOption';
 export { default as DealDailyy } from './products/DealDailyy';
+export { default as OrderItem } from './products/OrderItem';
 export { default as Countdown } from './common/Countdown';
 export { default as FeatureProduct } from './products/FeatureProduct';
 export { default as ProductCard } from './products/ProductCard';

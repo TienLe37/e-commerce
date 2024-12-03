@@ -335,17 +335,17 @@ const updateUserAddress = asyncHandler(async (req, res) => {
 // Thêm sản phẩm vào giỏ hàng
 const addToCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { pid, quantity = 1, color } = req.body;
+  const { pid, quantity = 1, color, price , thumb , title } = req.body;
   if (!pid || !color)
     throw new Error('Vui lòng nhập đủ thông tin');
   const user = await User.findById(_id).select('cart');
   // Tìm trong giỏ hàng xem có product chưa
   const alreadyProduct = user?.cart?.find((el) => el.product.toString() === pid);
-  if (alreadyProduct) {
+  if (alreadyProduct && alreadyProduct.color === color) {
     // nếu đã có product
       const response = await User.updateOne(
         { cart: { $elemMatch: alreadyProduct } },
-        { $set: { 'cart.$.quantity': quantity , 'cart.$.color': color } },
+        { $set: { 'cart.$.quantity': quantity , 'cart.$.price': price , 'cart.$.thumb': thumb , 'cart.$.title': title } },
         { new: true }
       );
       return res.status(200).json({
@@ -353,7 +353,7 @@ const addToCart = asyncHandler(async (req, res) => {
         mes: response ? 'Added to Cart ' : 'Something went wrong ',
       });
   } else {
-    const response = await User.findByIdAndUpdate(_id, { $push: { cart: { product: pid, quantity, color } } }, { new: true });
+    const response = await User.findByIdAndUpdate(_id, { $push: { cart: { product: pid, quantity, color, price, thumb ,title } } }, { new: true });
     return res.status(200).json({
       success: response ? true : false,
       mes: response ? 'Added to Cart ' : 'Something went wrong ',
@@ -363,16 +363,16 @@ const addToCart = asyncHandler(async (req, res) => {
 // remove product from cart
 const removeProductfromCart = asyncHandler(async (req, res) => {
   const { _id } = req.user
-  const { pid } = req.params
+  const { pid , color} = req.params
   const user = await User.findById(_id).select('cart')
-  const alreadyProduct = user?.cart?.find((el) => el.product.toString() === pid);
+  const alreadyProduct = user?.cart?.find((el) => el.product.toString() === pid && el.color === color) ;
   if(!alreadyProduct) {
     return res.status(200).json({
       success: true,
       mes: 'Removed product.'
-    });
+    }); 
   }
-  const response = await User.findByIdAndUpdate(_id, { $pull: { cart: { product: pid} } }, { new: true });
+  const response = await User.findByIdAndUpdate(_id, { $pull: { cart: { product: pid , color} } }, { new: true });
   return res.status(200).json({
     success: response ? true : false,
     mes: response ? 'Removed product from cart ' : 'Something went wrong ',

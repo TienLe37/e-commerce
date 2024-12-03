@@ -20,7 +20,7 @@ function Product({ productData, isNew, normal , navigate , dispatch }) {
   const [isShowOption, setisShowOption] = useState(false);
   const { current } = useSelector((state) => state.user);
 
-  const handleAddWishlist = async (e , flag) => {
+  const handleAddProduct = async (e , flag) => {
     e.stopPropagation()
     if(flag === 'WISHLIST') console.log('wishlist');
     if(flag === 'CART') {
@@ -60,10 +60,10 @@ function Product({ productData, isNew, normal , navigate , dispatch }) {
           {isShowOption && (
             <div 
             className=' absolute bottom-0 left-0 right-0 flex justify-center gap-4 animate-slide-top '>
-              <span title='Add to wishlist' onClick={ (e) => handleAddWishlist(e, 'WISHLIST')}><SelectOption icons={<BsFillSuitHeartFill size={20} />} /> </span>
+              <span title='Add to wishlist' onClick={ (e) => handleAddProduct(e, 'WISHLIST')}><SelectOption icons={<BsFillSuitHeartFill size={20} />} /> </span>
               {current?.cart?.some(el => el.product._id === productData._id) 
               ? <span title='Added to cart' ><SelectOption icons={<BsFillCartCheckFill size={25} color='green' />} /> </span>
-              : <span title='Add to cart' onClick={ (e) => handleAddWishlist(e, 'CART')}><SelectOption icons={<BiSolidCartAdd size={30} />} /> </span>
+              : <span title='Add to cart' onClick={ (e) => handleAddProduct(e, 'CART')}><SelectOption icons={<BiSolidCartAdd size={30} />} /> </span>
               }
             </div>
           )}
