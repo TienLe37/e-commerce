@@ -35,7 +35,14 @@ function Product({ productData, isNew, normal , navigate , dispatch }) {
             if(rs.isConfirmed) navigate(`/${path.LOGIN}`)
           })
         }
-        const response = await apiUpdateCart({pid: productData._id , color: productData.color})
+        const response = await apiUpdateCart({
+          pid: productData._id , 
+          color: productData.color, 
+          thumb: productData?.thumb,
+          images: productData?.images,
+          title: productData?.title,
+          price: productData?.price,
+        })
         if(response.success) {
           toast.success(response.mes)
           dispatch(getCurrent())
@@ -82,7 +89,7 @@ function Product({ productData, isNew, normal , navigate , dispatch }) {
         </div>
         <div className='  flex flex-col  mt-[15px] items-start gap-1 w-full'>
           <span className='flex h-4'>
-            {renderStar(productData.totalRatings)?.map((el, index) => (
+            {renderStar(productData?.totalRatings)?.map((el, index) => (
               <span key={index}>{el}</span>
             ))}
           </span>

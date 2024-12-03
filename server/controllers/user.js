@@ -340,12 +340,12 @@ const addToCart = asyncHandler(async (req, res) => {
     throw new Error('Vui lòng nhập đủ thông tin');
   const user = await User.findById(_id).select('cart');
   // Tìm trong giỏ hàng xem có product chưa
-  const alreadyProduct = user?.cart?.find((el) => el.product.toString() === pid);
-  if (alreadyProduct && alreadyProduct.color === color) {
+  const alreadyProduct = user?.cart?.find((el) => el.product.toString() === pid && el.color === color);
+  if (alreadyProduct) {
     // nếu đã có product
       const response = await User.updateOne(
         { cart: { $elemMatch: alreadyProduct } },
-        { $set: { 'cart.$.quantity': quantity , 'cart.$.price': price , 'cart.$.thumb': thumb , 'cart.$.title': title } },
+        { $set: { 'cart.$.quantity': +alreadyProduct?.quantity + quantity , 'cart.$.price': price , 'cart.$.thumb': thumb , 'cart.$.title': title } },
         { new: true }
       );
       return res.status(200).json({

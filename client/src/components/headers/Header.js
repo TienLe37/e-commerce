@@ -7,7 +7,8 @@ import logo from 'assets/logo.png';
 import { Link } from 'react-router-dom';
 import path from 'utils/path';
 import { showCart } from 'store/app/appSlice';
-const { RiPhoneFill, MdEmail, BsHandbagFill, FaUserCircle } = icons;
+import { FaCartShopping } from 'react-icons/fa6';
+const { RiPhoneFill, MdEmail, FaUserCircle } = icons;
 const Header = () => {
   const { current } = useSelector((state) => state.user);
   const [showOption, setShowOption] = useState(false)
@@ -48,26 +49,31 @@ const Header = () => {
           <Fragment>
             <div 
             onClick={() => dispatch(showCart())}
-            className='flex items-center justify-center cursor-pointer gap-2 px-4 border-r'>
-              <BsHandbagFill color='red' size={16} />
-              <span className='text-[16px]'>{`${current?.cart?.length || 0} items`}</span>
+            className='relative  flex items-center justify-center cursor-pointer gap-2 px-4 border-r'>
+             <FaCartShopping color='red' size={25} />
+             <small className='absolute top-[-2px] right-[6px]  w-[20px] h-[18px] py-[2px] flex justify-center items-center rounded-full text-sm bg-white border-main text-main  border'> 
+             {`${current?.cart?.length || 0}`}</small>
             </div>
             <div
-              onClick={e => {
+              onMouseEnter={e => {
                 e.stopPropagation()
-                setShowOption(prev => !prev)
+                setShowOption(true)
+              }}
+              onMouseLeave={e => {
+                e.stopPropagation()
+                setShowOption(false)
               }}
               id='profile'
               className='relative flex items-center justify-center cursor-pointer gap-2 px-4 border-r'
             >
-              <FaUserCircle color='red' size={16} />
+              <FaUserCircle color='red' size={20} />
               <span className='text-[16px]'>Profile</span>
               {showOption && 
                 <div
                   onClick={e => {
                     e.stopPropagation()
                   }}
-                  className='absolute top-full flex-col flex left-[16px] bg-gray-100 border min-w-[150px] py-2 '>
+                  className='absolute top-full flex-col flex shadow-md rounded-md right-0 bg-[#fff] border min-w-[150px] '>
                   {+current?.role === 1945 && 
                     <Link  to={`/${path.ADMIN}/${path.DASHBOARD}` }
                     className='p-2 w-full hover:bg-sky-100'  
@@ -77,7 +83,12 @@ const Header = () => {
                   <Link  to={`/${path.MEMBER}/${path.PERSONAL}` }
                   className='p-2 w-full hover:bg-sky-100'  
                   >
-                    Personal
+                    My Account
+                  </Link>
+                  <Link  to={`/${path.DETAIL_CART}` }
+                  className='p-2 w-full hover:bg-sky-100'  
+                  >
+                    My Cart
                   </Link>
                   <span 
                   className='p-2 w-full hover:bg-sky-100'  
