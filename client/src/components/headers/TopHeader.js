@@ -47,7 +47,7 @@ const TopHeader = () => {
 
         {isLoggedIn && current ? (
           <div className='flex gap-4 text-sm items-center '>
-            <span>{`Welcome, ${current?.firstname} ${current?.lastname}`}</span>
+            <span>{`Welcome, ${current?.lastname} ${current?.firstname}`}</span>
             <span
               onClick={() => handleLogout()}
               className=' hover:rounded-full hover:bg-gray-200 cursor-pointer hover:text-main p-1 mr-[-15px]'

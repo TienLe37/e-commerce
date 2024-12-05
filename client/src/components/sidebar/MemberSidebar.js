@@ -22,7 +22,7 @@ const MemberSidebar = () => {
         <img src={current?.avatar || avatar} alt='avatar' className='w-[150px] h-[150px] object-cover rounded-full border ' />
         <small className='text-sm font-semibold'>{`${current?.lastname } ${current?.firstname }`}</small>
       </div>
-      <div>
+      <div className=''>
         {memberSidebar.map((el) => (
           <Fragment key={el.id}>
             {el.type === 'SINGLE' && (

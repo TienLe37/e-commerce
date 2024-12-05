@@ -1,7 +1,6 @@
 import React from 'react';
 
 import icons from 'utils/icons';
-
 import {
   Sidebar,
   Banner,
@@ -17,6 +16,7 @@ const Home = () => {
   const { categories } = useSelector((state) => state.app);
   return (
     <>
+      
       <div className='w-main flex '>
         <div className='flex flex-col gap-5 w-[25%] flex-auto '>
           <Sidebar />

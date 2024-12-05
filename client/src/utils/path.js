@@ -10,7 +10,8 @@ const path = {
   DETAIL_PRODUCT__CATEGORY__PID__TITTLE: ':category/:pid/:title',
   FINAL_REGISTER: 'finalregister/:status',
   RESET_PASSWORD: 'reset-password/:token',
-  DETAIL_CART: 'my-cart',
+  DETAIL_CART: 'my-shopping-cart',
+  CHECK_OUT: 'checkout',
   //  Admin
   ADMIN: 'admin',
   DASHBOARD: 'dashboard',
@@ -21,7 +22,7 @@ const path = {
   //  member
   MEMBER: 'member',
   PERSONAL: 'personal',
-  MY_CART: 'my-cart',
+  MY_PURCHASE: 'my-purchase',
   HISTORY: 'buy-history',
   WISHLIST: 'wishlist'
 

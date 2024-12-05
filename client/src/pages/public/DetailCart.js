@@ -2,14 +2,16 @@ import { Breadcrumb, Button, OrderItem } from 'components'
 import withBaseComponent from 'hocs/withBaseComponent'
 import React, { memo  } from 'react'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { formatMoney } from 'utils/helpers'
+import path from 'utils/path'
 
-const DetailCart = ({location}) => {
+const DetailCart = ({location,dispatch,navigate}) => {
   const { currentCart } = useSelector(state => state.user)
   return (
     <div className='w-main mb-10'>
         <div className='w-full  bg-gray-100 mt-[-24px] py-[15px] px-[5px]'>
-          <h3 className='font-semibold'>My Cart</h3>
+          <h3 className='font-semibold'>My Shopping Cart</h3>
           <Breadcrumb category={location?.pathname?.replace('/','')?.split('-').join(' ')}/>
         </div>
         <div className='w-full mt-[25px] mx-auto border font-bold py-3 grid grid-cols-10'>
@@ -31,8 +33,9 @@ const DetailCart = ({location}) => {
             <span className=''>{formatMoney(currentCart?.reduce((sum , el) => sum + Number(el?.price) * el?.quantity ,0)) + ' VNĐ'} </span>
           </span>
           <span className='text-center text-gray-700 italic text-xs'>Shipping, taxes, and discounts calculate at checkout.</span>
-          <span></span>
-          <Button>Check Out</Button>
+          <Link target='_blank' className='bg-main text-white px-4 py-2 rounded-md' to={`/${path.CHECK_OUT}`}>
+            Checkout
+          </Link>
         </div>
     </div>
 

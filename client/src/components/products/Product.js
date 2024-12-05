@@ -5,7 +5,6 @@ import newLabel from 'assets/newLabel.png';
 import { formatMoney, renderStar } from 'utils/helpers';
 import icons from 'utils/icons';
 import { SelectOption } from 'components';
-import { Link, useNavigate } from 'react-router-dom';
 import { BiSolidCartAdd } from 'react-icons/bi';
 import { useSelector } from 'react-redux';
 import { apiUpdateCart } from 'apis';

@@ -60,7 +60,7 @@ const Cart = ({dispatch , navigate}) => {
           navigate(`${path.DETAIL_CART}`)
         }} 
           style='rounded-none w-full text-white bg-main my-2 hover:bg-red-700 py-3'
-        >Shopping Cart</Button>
+        >View My Shopping Cart</Button>
       </div>
     </div>
   )

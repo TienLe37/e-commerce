@@ -1,4 +1,4 @@
-import { BsReplyFill, BsShieldShaded } from 'react-icons/bs';
+import { BsFillCartCheckFill, BsReplyFill, BsShieldShaded } from 'react-icons/bs';
 import path from './path';
 import { RiBillLine, RiTruckFill } from 'react-icons/ri';
 import { AiFillGift, AiOutlineDashboard } from 'react-icons/ai';
@@ -227,9 +227,9 @@ export const memberSidebar = [
   {
     id: 2,
     type: 'SINGLE',
-    text: 'My Cart',
-    path: `/${path.MEMBER}/${path.MY_CART}`,
-    icon: <FaCartShopping size={30} />,
+    text: 'My Purchase',
+    path: `/${path.MEMBER}/${path.MY_PURCHASE}`,
+    icon: <BsFillCartCheckFill size={30} />,
   },
   
   {

@@ -21,7 +21,7 @@ import {
   ManageProducts,
   ManageUser,
 } from './pages/admin';
-import { History, MemberLayout, MyCart, Personal, Wishlist } from './pages/member';
+import { Checkout, History, MemberLayout, MyCart, MyPurchase, Personal, Wishlist } from './pages/member';
 import path from './utils/path';
 import { getCategories } from './store/app/asyncActions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -54,6 +54,12 @@ function App() {
           <Route path={path.PRODUCTS} element={<Products />} />
           <Route path={path.RESET_PASSWORD} element={<ResetPassword />} />
           <Route path={path.DETAIL_CART} element={<DetailCart />} />
+          <Route path={path.MEMBER} element={<MemberLayout />}>
+            <Route path={path.PERSONAL} element={<Personal />} />
+            <Route path={path.MY_PURCHASE} element={<MyPurchase />} />
+            <Route path={path.WISHLIST} element={<Wishlist />} />
+            <Route path={path.HISTORY} element={<History />} />
+          </Route>
           <Route path={path.ALL} element={<Home />} />
         </Route>
         <Route path={path.ADMIN} element={<AdminLayout />}>
@@ -63,12 +69,7 @@ function App() {
           <Route path={path.MANAGE_ORDER} element={<ManageOrder />} />
           <Route path={path.CREATE_PRODUCTS} element={<CreateProducts />} />
         </Route>
-        <Route path={path.MEMBER} element={<MemberLayout />}>
-          <Route path={path.PERSONAL} element={<Personal />} />
-          <Route path={path.MY_CART} element={<MyCart />} />
-          <Route path={path.WISHLIST} element={<Wishlist />} />
-          <Route path={path.HISTORY} element={<History />} />
-        </Route>
+        <Route path={path.CHECK_OUT} element={<Checkout />} />
         <Route path={path.FINAL_REGISTER} element={<FinalRegister />} />
         <Route path={path.LOGIN} element={<Login />} />
       </Routes>
