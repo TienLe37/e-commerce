@@ -77,7 +77,7 @@ const Header = () => {
                     <Link  to={`/${path.ADMIN}/${path.DASHBOARD}` }
                     className='p-2 w-full hover:bg-sky-100'  
                    >
-                    Admin Worspace
+                    Admin Workspace
                     </Link>}
                   <Link  to={`/${path.MEMBER}/${path.PERSONAL}` }
                   className='p-2 w-full hover:bg-sky-100'  

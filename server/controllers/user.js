@@ -305,7 +305,7 @@ const updateUserByAdmin = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { email, firstname, lastname, mobile } = req.body;
-  const data = { email, firstname, lastname, mobile }
+  const data = { email, firstname, lastname, mobile}
   if(req.file) data.avatar = req.file?.path
   if (!_id || Object.keys(req.body).length === 0)
     throw new Error('Missing inputs');

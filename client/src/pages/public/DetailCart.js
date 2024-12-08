@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, OrderItem } from 'components'
+import { Breadcrumb, Button, OrderItem, Paypal } from 'components'
 import withBaseComponent from 'hocs/withBaseComponent'
 import React, { memo  } from 'react'
 import { useSelector } from 'react-redux'

@@ -6,29 +6,14 @@ const asyncHandler = require('express-async-handler');
 // Đơn hàng của user
 const createOrder = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { coupon } = req.body;
-  const userCart = await User.findById(_id)
-    .select('cart')
-    .populate('cart.product', 'title price');
-  const products = userCart?.cart?.map((el) => ({
-    product: el.product._id,
-    count: el.quantity,
-    color: el.color,
-  }));
-  let total = userCart?.cart?.reduce(
-    (sum, el) => el.product.price * el.quantity + sum,
-    0
-  );
-  const createOrderData = { products, total, orderBy: _id };
-  if (coupon) {
-    const selectCoupon = await Coupon.findById(coupon);
-    total =
-      Math.round((total * (1 - selectCoupon.discount / 100)) / 1000) * 1000 ||
-      total;
-    createOrderData.total = total;
-    createOrderData.coupon = coupon;
+  const {products, total, address,status} = req.body
+  console.log(address);
+  if(address) {
+    await User.findByIdAndUpdate( _id, { address, cart: [] },  );
   }
-  const response = await Order.create(createOrderData);
+  const data = {products, total, orderBy: _id}
+  if(status) data.status = status
+  const response = await Order.create(data);
   return res.json({
     success: response ? true : false,
     rs: response ? response : 'Cannot create order',
