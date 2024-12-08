@@ -47,7 +47,7 @@ const ButtonWrapper = ({ currency,showSpinner,amount, payload ,setPaymentSuccess
                         {amount: {currency_code: currency, value: amount}}
                     ]
                 }).then(orderId => orderId)}
-                onApprove={(data, actions) => actions.order.capture().then( async(response) =>{
+                onApprove={(data, actions) => actions.order.capture().then( async (response) =>{
                     if(response.status === 'COMPLETED') {
                         handleSaveOrder()
                     }

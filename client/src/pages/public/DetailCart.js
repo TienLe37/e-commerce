@@ -2,12 +2,31 @@ import { Breadcrumb, Button, OrderItem, Paypal } from 'components'
 import withBaseComponent from 'hocs/withBaseComponent'
 import React, { memo  } from 'react'
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { createSearchParams, Link } from 'react-router-dom'
+import Swal from 'sweetalert2'
 import { formatMoney } from 'utils/helpers'
 import path from 'utils/path'
 
 const DetailCart = ({location,dispatch,navigate}) => {
-  const { currentCart } = useSelector(state => state.user)
+  const { currentCart, current } = useSelector(state => state.user)
+  const handleSubmit = () => {
+    if(!current?.address) return  Swal.fire({
+      icon: 'info',
+      title: 'Almost!',
+      text: 'Please update your address before checkout!!!',
+      showCancelButton: true,
+      cancelButtonText: 'Cancel',
+      confirmButtonText: 'Update address',
+    }).then((rs) => {
+      if (rs.isConfirmed) {
+        navigate({
+          pathname: `/${path.MEMBER}/${path.PERSONAL}`,
+          search: createSearchParams({redirect: location.pathname}).toString()
+        })
+      }
+    });
+    else window.open(`/${path.CHECK_OUT}`, '_blank')
+  }
   return (
     <div className='w-main mb-10'>
         <div className='w-full  bg-gray-100 mt-[-24px] py-[15px] px-[5px]'>
@@ -33,9 +52,7 @@ const DetailCart = ({location,dispatch,navigate}) => {
             <span className=''>{formatMoney(currentCart?.reduce((sum , el) => sum + Number(el?.price) * el?.quantity ,0)) + ' VNĐ'} </span>
           </span>
           <span className='text-center text-gray-700 italic text-xs'>Shipping, taxes, and discounts calculate at checkout.</span>
-          <Link target='_blank' className='bg-main text-white px-4 py-2 rounded-md' to={`/${path.CHECK_OUT}`}>
-            Checkout
-          </Link>
+          <Button handleOnClick={handleSubmit}>Checkout</Button>
         </div>
     </div>
 

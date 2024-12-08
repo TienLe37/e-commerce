@@ -304,8 +304,8 @@ const updateUserByAdmin = asyncHandler(async (req, res) => {
 // Update user by user
 const updateUser = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { email, firstname, lastname, mobile } = req.body;
-  const data = { email, firstname, lastname, mobile}
+  const { email, firstname, lastname, mobile, address } = req.body;
+  const data = { email, firstname, lastname, mobile, address}
   if(req.file) data.avatar = req.file?.path
   if (!_id || Object.keys(req.body).length === 0)
     throw new Error('Missing inputs');
@@ -321,15 +321,14 @@ const updateUser = asyncHandler(async (req, res) => {
 // Thêm địc chỉ user
 const updateUserAddress = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  if (!req.body.address) throw new Error('Vui lòng nhập đủ thông tin');
+  const {address} = req.body
   const response = await User.findByIdAndUpdate(
     _id,
-    { $push: { address: req.body.address } },
-    { new: true }
+    {address},{new: true}
   ).select('-password  -role -refreshToken');
   return res.status(200).json({
     success: response ? true : false,
-    upDateAddress: response ? response : 'Cannot update address  ',
+    mes: response ? 'Updated Address' : 'Cannot update address  ',
   });
 });
 // Thêm sản phẩm vào giỏ hàng
@@ -337,7 +336,7 @@ const addToCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { pid, quantity = 1, color, price , thumb , title } = req.body;
   if (!pid || !color)
-    throw new Error('Vui lòng nhập đủ thông tin');
+    throw new Error('Not found Product');
   const user = await User.findById(_id).select('cart');
   // Tìm trong giỏ hàng xem có product chưa
   const alreadyProduct = user?.cart?.find((el) => el.product.toString() === pid && el.color === color);

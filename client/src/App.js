@@ -51,7 +51,7 @@ function App() {
           <Route path={path.DETAIL_PRODUCT__CATEGORY__PID__TITTLE} element={<DetailProduct />}/>
           <Route path={path.FAQS} element={<FAQ />} />
           <Route path={path.SERVICES} element={<Services />} />
-          <Route path={path.PRODUCTS} element={<Products />} />
+          <Route path={path.PRODUCTS__CATEGORY} element={<Products />} />
           <Route path={path.RESET_PASSWORD} element={<ResetPassword />} />
           <Route path={path.DETAIL_CART} element={<DetailCart />} />
           <Route path={path.MEMBER} element={<MemberLayout />}>

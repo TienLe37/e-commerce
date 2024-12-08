@@ -2,16 +2,18 @@ import { Button, InputForm } from 'components';
 import moment from 'moment';
 import React ,{ useEffect,useState}from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import avatar from 'assets/avatarDefault.png';
 import { apiUpdateCurrent } from 'apis';
 import { getCurrent } from 'store/user/asyncActions';
 import { toast } from 'react-toastify';
 import { getBase64 } from 'utils/helpers';
+import { useSearchParams } from 'react-router-dom';
+import withBaseComponent from 'hocs/withBaseComponent';
 
-const Personal = () => {
+const Personal = ({dispatch, navigate}) => {
   const { current } = useSelector(state => state.user)
-  const dispatch = useDispatch()
+  const [searchParams] = useSearchParams()
   const {
     register,
     formState: { errors, isDirty },
@@ -27,6 +29,7 @@ const Personal = () => {
         mobile: current?.mobile,
         email: current?.email,
         avatar: current?.avatar,
+        address: current?.address,
       })
       setPreview({
         avatar: current?.avatar || ''
@@ -51,6 +54,7 @@ const Personal = () => {
     if(response.success) {
         dispatch(getCurrent())
         toast.success(response.mes)
+        if(searchParams.get('redirect')) navigate(searchParams.get('redirect'))
     } else toast.error(response.mes)
   }
   return ( 
@@ -95,19 +99,30 @@ const Personal = () => {
             }}
             /> 
             <InputForm
-            label='Mobile'
-            register={register}
-            errors={errors}
-            id='mobile'
-            fullWidth
-            validate={{
-              required: 'Required',
-              pattern: {
-                value: /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im,
-                message: 'Phone number invalid'
-              }
-            }}
+              label='Mobile'
+              register={register}
+              errors={errors}
+              id='mobile'
+              fullWidth
+              validate={{
+                required: 'Required',
+                pattern: {
+                  value: /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im,
+                  message: 'Phone number invalid'
+                }
+              }}
             />   
+             <InputForm
+              label='Address'
+              register={register}
+              errors={errors}
+              id='address'
+              fullWidth
+              validate={{
+                required: 'Required',
+                  }
+                }
+            />  
             <div className='flex items-center gap-2'>
               <span className=''>Account status:</span>
               <span className=''>{current?.isBlocked ?  'Blocked' : 'Actived'}</span>
@@ -121,13 +136,6 @@ const Personal = () => {
               <span className=''>{moment(current?.createdAt).fromNow()}</span>
             </div>
             <div className='flex flex-col gap-2 '>
-              {/* <span className='font-medium'>Avatar:</span>
-              <input type='file' id='file' {...register('avatar')}></input>
-              <label htmlFor='file'>
-                <img src={current?.avatar || avatar} alt='avatar' 
-                className='w-20 h-20 object-cover rounded-full'
-                ></img>
-              </label> */}
             <label className='font-medium ' htmlFor='avatar'>
               Upload Avatar:
             </label>
@@ -150,4 +158,4 @@ const Personal = () => {
   )
 };
 
-export default Personal;
+export default withBaseComponent(Personal);

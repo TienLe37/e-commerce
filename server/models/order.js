@@ -18,6 +18,7 @@ var orderSchema = new mongoose.Schema({
     enum: ['Cancel', 'Success'],
   },
   total: Number,
+  address: String,
   orderBy: {
     type: mongoose.Types.ObjectId,
     ref: 'User',
